@@ -15,5 +15,5 @@ class ImagePreProcessing
         //TESTING PORPUSE//
         cv::Mat canny_edge_detection(cv::Mat image, int minVal, int maxVal);
         cv::Mat gaussianBlur(cv::Mat image, int kernelSize);
-        cv::Mat hough_lines(cv::Mat edgesImage, double rho, double theta, int threshold, double minLineLength, double maxLineGap);
+        cv::Mat hough_lines(cv::Mat edgesImage, double rho, double theta, int threshold, int minLineLength, int maxLineGap);
 };
