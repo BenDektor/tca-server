@@ -11,21 +11,27 @@ struct LineProperties {
     float xIntercept;
     cv::Point startPoint;
     cv::Point endPoint;
+
+    // Define the == operator
+    bool operator==(const LineProperties& other) const {
+        return angle == other.angle &&
+               xIntercept == other.xIntercept &&
+               startPoint == other.startPoint &&
+               endPoint == other.endPoint;
+    }
 };
 
 
-struct Cluster {
-    std::vector<LineProperties> lines;
-    LineProperties centroid;
+
+enum StreetLaneStatus {
+    NO_LANE = 0, //Two lanelines with different angles
+    ONE_LANE = 1, //Two lanelines with same angle
+    TWO_LANES = 2, //Two lanelines with same angle but further away or not on the angle of the car
 };
 
-
-
-enum CarPosition {
-    MID_OF_STREET = 0, //Two lanelines with different angles
-    SIDE_OF_STREET = 1, //Two lanelines with same angle
-    NOT_ON_STREET = 2, //Two lanelines with same angle but further away or not on the angle of the car
-    NO_STREET = 3 //No lanelines found
+struct StreetLaneResult {
+    StreetLaneStatus status;
+    std::vector<std::vector<LineProperties>> groups;
 };
 
 
@@ -33,7 +39,7 @@ enum CarPosition {
 class StrasenFinder2
 {
     public:
-        CarPosition determineCarPos(cv::Mat inputImage);    
+        StreetLaneResult find_streetLanes(cv::Mat inputImage);    
 
         cv::Mat blurredImage;
         cv::Mat mask;
@@ -46,12 +52,11 @@ class StrasenFinder2
 
         cv::Mat preProcessImage(cv::Mat inputImage);
 
-        bool houghLines(cv::Mat maskedImage, cv::Mat inputImage, std::vector<cv::Vec4i>& lines);
+        bool houghLinesAlgo(cv::Mat maskedImage, cv::Mat inputImage, std::vector<cv::Vec4i>& lines);
         std::vector<LineProperties> calculateLineProperties(cv::Mat inputImage, std::vector<cv::Vec4i>& lines);
-        void clusterLines(std::vector<LineProperties>& lineProps);
-        double distance(const LineProperties& line1, const LineProperties& line2);
-        bool isOutlier(const LineProperties& line1, const LineProperties& line2, double threshold);
+        double median(std::vector<double> vec);
 
-        double median(std::vector<double> vec);        
-
+        std::vector<std::vector<LineProperties>> groupLines(const std::vector<LineProperties>& lines);
+        float calculateAverageXIntercept(const std::vector<LineProperties>& group);
+        
 };

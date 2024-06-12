@@ -13,7 +13,7 @@ cv::Mat StrasenFinder2::preProcessImage(cv::Mat inputImage) {
 
 
 
-bool StrasenFinder2::houghLines(cv::Mat maskedImage, cv::Mat inputImage, std::vector<cv::Vec4i>& lines)
+bool StrasenFinder2::houghLinesAlgo(cv::Mat maskedImage, cv::Mat inputImage, std::vector<cv::Vec4i>& lines)
 {
     bool success;
 
@@ -68,27 +68,122 @@ std::vector<LineProperties> StrasenFinder2::calculateLineProperties(cv::Mat inpu
 }
 
 
+float StrasenFinder2::calculateAverageXIntercept(const std::vector<LineProperties>& group) {
+        float sum = 0.0f;
+        for (const auto& line : group) {
+            sum += line.xIntercept;
+        }
+        return sum / group.size();
+}
 
 
+// group lines, where the xintercept of a line in a group is max 15% percent of the average xintercept in that group
+std::vector<std::vector<LineProperties>> StrasenFinder2::groupLines(const std::vector<LineProperties>& lines) {
+    std::vector<std::vector<LineProperties>> groups;
 
-CarPosition StrasenFinder2::determineCarPos(cv::Mat inputImage) {
-
-    cv::Mat preProccessedImage = preProcessImage(inputImage);
-
-    std::vector<cv::Vec4i> houghlines;
-    //Find all lines on image
-    if(!houghLines(maskedImage, inputImage, houghlines))
-    {
-        return CarPosition::NO_STREET;
+    for (const auto& line : lines) {
+        bool added = false;
+        for (auto& group : groups) {
+            float avg_x_intercept = calculateAverageXIntercept(group);
+            if (std::abs(line.xIntercept - avg_x_intercept) <= 0.15 * avg_x_intercept) {
+                group.push_back(line);
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            groups.push_back({line});
+        }
     }
-    else
-    {
-        std::cout << "HoughLines returned success" <<std::endl;
 
-        std::vector<LineProperties> lineproperties = calculateLineProperties(inputImage, houghlines);
-        
-        // Perform k-means clustering
-        auto [cluster1, cluster2] = kMeansClustering(lineproperties);
+    // Print out the generated groups
+    /*for (size_t i = 0; i < groups.size(); ++i) {
+        std::cout << "Group " << i + 1 << ":" << std::endl;
+        for (const auto& line : groups[i]) {
+            std::cout << "Angle: " << line.angle << ", X Intercept: " << line.xIntercept << std::endl;
+        }
+    }*/
+    return groups;
+}
+
+
+
+StreetLaneResult StrasenFinder2::find_streetLanes(cv::Mat inputImage) {
+    cv::Mat preProcessedImg = preProcessImage(inputImage);
+
+    std::vector<cv::Vec4i> houghLines;
+    if (!houghLinesAlgo(preProcessedImg, inputImage, houghLines)) 
+    {
+        return {StreetLaneStatus::NO_LANE, {}};
+    } 
+    else 
+    {
+        std::cout << "HoughLines returned success" << std::endl;
+
+        std::vector<LineProperties> lineProperties = calculateLineProperties(inputImage, houghLines);
+        if (lineProperties.size() < 1) {
+            return {StreetLaneStatus::NO_LANE, {}};
+        }
+
+        // Group lines based on x-intercepts
+        std::vector<std::vector<LineProperties>> groups = groupLines(lineProperties);
+
+        if (groups.size() < 1) 
+        {
+            return {StreetLaneStatus::NO_LANE, {}};
+        } 
+        else if (groups.size() == 1) 
+        {
+            return {StreetLaneStatus::ONE_LANE, groups};
+        } 
+        else 
+        {
+            // Find the two largest groups
+            std::vector<LineProperties> largestGroup1;
+            std::vector<LineProperties> largestGroup2;
+            float avgIntercept1 = 0.0f, avgIntercept2 = 0.0f;
+            float minAvgDistToCenter = std::numeric_limits<float>::max();
+            float imageWidthCenter = inputImage.cols / 2.0f;
+
+            for (const auto& group : groups) {
+                float avgIntercept = calculateAverageXIntercept(group);
+                float avgDistToCenter = std::abs(avgIntercept - imageWidthCenter);
+
+                if (group.size() > largestGroup1.size()) {
+                    largestGroup2 = largestGroup1;
+                    avgIntercept2 = avgIntercept1;
+
+                    largestGroup1 = group;
+                    avgIntercept1 = avgIntercept;
+                    minAvgDistToCenter = avgDistToCenter;
+                } else if (group.size() > largestGroup2.size()) {
+                    largestGroup2 = group;
+                    avgIntercept2 = avgIntercept;
+                } else if (group.size() == largestGroup1.size() && avgDistToCenter < minAvgDistToCenter) {
+                    largestGroup1 = group;
+                    avgIntercept1 = avgIntercept;
+                    minAvgDistToCenter = avgDistToCenter;
+                } else if (group.size() == largestGroup2.size() && avgDistToCenter < minAvgDistToCenter) {
+                    largestGroup2 = group;
+                    avgIntercept2 = avgIntercept;
+                }
+            }
+
+            // Check if only one group was found, return it
+            if (largestGroup2.empty()) {
+                return {StreetLaneStatus::ONE_LANE, {largestGroup1}};
+            } else {
+                // Check distance between average x-intercepts of the two largest groups
+                float distanceBetweenGroups = std::abs(avgIntercept1 - avgIntercept2);
+                float imageWidthThird = inputImage.cols / 3.0f;
+
+                if (distanceBetweenGroups >= imageWidthThird) {
+                    return {StreetLaneStatus::TWO_LANES, {largestGroup1, largestGroup2}};
+                } else {
+                    return {StreetLaneStatus::ONE_LANE, {largestGroup1}};
+                }
+            }
+        }
     }
 }
 
@@ -97,14 +192,43 @@ CarPosition StrasenFinder2::determineCarPos(cv::Mat inputImage) {
 
 
 
+
 int main(){
     
-    cv::Mat image = cv::imread("../images/test_image8.jpg");
+    cv::Mat image = cv::imread("../images/size8.jpg");
 
     StrasenFinder2 strassenFinder;
     
 
-    int pos = strassenFinder.determineCarPos(image);
+    StreetLaneResult result = strassenFinder.find_streetLanes(image);
+
+
+    // Print street lane status
+    switch (result.status) {
+        case StreetLaneStatus::NO_LANE:
+            std::cout << "No street lanes detected." << std::endl;
+            break;
+        case StreetLaneStatus::ONE_LANE:
+            std::cout << "One street lane detected." << std::endl;
+            break;
+        case StreetLaneStatus::TWO_LANES:
+            std::cout << "Two street lanes detected." << std::endl;
+            break;
+    }
+
+    // Print groups if any were found
+    if (!result.groups.empty()) {
+        std::cout << "Number of groups found: " << result.groups.size() << std::endl;
+        for (size_t i = 0; i < result.groups.size(); ++i) {
+            std::cout << "Group " << i + 1 << " size: " << result.groups[i].size() << std::endl;
+            for (const auto& line : result.groups[i]) {
+                std::cout << "  Angle: " << line.angle << ", X Intercept: " << line.xIntercept << std::endl;
+            }
+        }
+    } else {
+        std::cout << "No groups found." << std::endl;
+    }
+
 
     cv::Mat blurredImage = strassenFinder.blurredImage;
     cv::Mat houghImage = strassenFinder.houghLinesImage;
@@ -112,8 +236,8 @@ int main(){
 
 
     cv::imshow("hough", houghImage);
-    cv::imshow("edgesImage", edgesImage);
-    cv::imshow("blurr", blurredImage);
+    //cv::imshow("edgesImage", edgesImage);
+    //cv::imshow("blurr", blurredImage);
 
     cv::waitKey(0); // wait for a key press    
     return 0;
