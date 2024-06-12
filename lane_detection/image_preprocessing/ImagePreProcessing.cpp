@@ -10,7 +10,7 @@ cv::Mat ImagePreProcessing::convert_to_gray(cv::Mat image)
 
 cv::Mat ImagePreProcessing::gaussianBlur(cv::Mat image)
 {
-    int kernelSize = 11; // bigger kernel = more smoothing
+    int kernelSize = 5; // bigger kernel = more smoothing
     cv::Mat gaussianBlurImage;
     cv::GaussianBlur(image, gaussianBlurImage, cv::Size(kernelSize, kernelSize), 0, 0);
     return gaussianBlurImage;
@@ -20,8 +20,8 @@ cv::Mat ImagePreProcessing::canny_edge_detection(cv::Mat image)
 {
     // finds gradient in x,y direction, gradient direction is perpendicular to edges
     // Define values for edge detection
-    int minVal = 60;
-    int maxVal = 150;
+    int minVal = 240;
+    int maxVal = 255;
     cv::Mat edgesImage;
 
     cv::Canny(image, edgesImage, minVal, maxVal);

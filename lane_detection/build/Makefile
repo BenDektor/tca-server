@@ -117,24 +117,48 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named laneFinder
+# Target rules for targets named strasenfinder2
 
 # Build rule for target.
-laneFinder: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 laneFinder
-.PHONY : laneFinder
+strasenfinder2: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 strasenfinder2
+.PHONY : strasenfinder2
 
 # fast build rule for target.
-laneFinder/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/build
-.PHONY : laneFinder/fast
+strasenfinder2/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/build
+.PHONY : strasenfinder2/fast
+
+Strasenfinder2.o: Strasenfinder2.cpp.o
+.PHONY : Strasenfinder2.o
+
+# target to build an object file
+Strasenfinder2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o
+.PHONY : Strasenfinder2.cpp.o
+
+Strasenfinder2.i: Strasenfinder2.cpp.i
+.PHONY : Strasenfinder2.i
+
+# target to preprocess a source file
+Strasenfinder2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.i
+.PHONY : Strasenfinder2.cpp.i
+
+Strasenfinder2.s: Strasenfinder2.cpp.s
+.PHONY : Strasenfinder2.s
+
+# target to generate assembly for a file
+Strasenfinder2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.s
+.PHONY : Strasenfinder2.cpp.s
 
 image_preprocessing/ImagePreProcessing.o: image_preprocessing/ImagePreProcessing.cpp.o
 .PHONY : image_preprocessing/ImagePreProcessing.o
 
 # target to build an object file
 image_preprocessing/ImagePreProcessing.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/image_preprocessing/ImagePreProcessing.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.o
 
 image_preprocessing/ImagePreProcessing.i: image_preprocessing/ImagePreProcessing.cpp.i
@@ -142,7 +166,7 @@ image_preprocessing/ImagePreProcessing.i: image_preprocessing/ImagePreProcessing
 
 # target to preprocess a source file
 image_preprocessing/ImagePreProcessing.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/image_preprocessing/ImagePreProcessing.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.i
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.i
 
 image_preprocessing/ImagePreProcessing.s: image_preprocessing/ImagePreProcessing.cpp.s
@@ -150,32 +174,8 @@ image_preprocessing/ImagePreProcessing.s: image_preprocessing/ImagePreProcessing
 
 # target to generate assembly for a file
 image_preprocessing/ImagePreProcessing.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/image_preprocessing/ImagePreProcessing.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.s
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.s
-
-laneFindingAlgorithmus.o: laneFindingAlgorithmus.cpp.o
-.PHONY : laneFindingAlgorithmus.o
-
-# target to build an object file
-laneFindingAlgorithmus.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/laneFindingAlgorithmus.cpp.o
-.PHONY : laneFindingAlgorithmus.cpp.o
-
-laneFindingAlgorithmus.i: laneFindingAlgorithmus.cpp.i
-.PHONY : laneFindingAlgorithmus.i
-
-# target to preprocess a source file
-laneFindingAlgorithmus.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/laneFindingAlgorithmus.cpp.i
-.PHONY : laneFindingAlgorithmus.cpp.i
-
-laneFindingAlgorithmus.s: laneFindingAlgorithmus.cpp.s
-.PHONY : laneFindingAlgorithmus.s
-
-# target to generate assembly for a file
-laneFindingAlgorithmus.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/laneFindingAlgorithmus.cpp.s
-.PHONY : laneFindingAlgorithmus.cpp.s
 
 # Help Target
 help:
@@ -185,13 +185,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... laneFinder"
+	@echo "... strasenfinder2"
+	@echo "... Strasenfinder2.o"
+	@echo "... Strasenfinder2.i"
+	@echo "... Strasenfinder2.s"
 	@echo "... image_preprocessing/ImagePreProcessing.o"
 	@echo "... image_preprocessing/ImagePreProcessing.i"
 	@echo "... image_preprocessing/ImagePreProcessing.s"
-	@echo "... laneFindingAlgorithmus.o"
-	@echo "... laneFindingAlgorithmus.i"
-	@echo "... laneFindingAlgorithmus.s"
 .PHONY : help
 
 
