@@ -69,19 +69,19 @@ include CMakeFiles/strasenfinder2.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/strasenfinder2.dir/flags.make
 
-CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o: CMakeFiles/strasenfinder2.dir/flags.make
-CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/lane_detection/Strasenfinder2.cpp
-CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o: CMakeFiles/strasenfinder2.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o -MF CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o.d -o CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o -c "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/Strasenfinder2.cpp"
+CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o: CMakeFiles/strasenfinder2.dir/flags.make
+CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp
+CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o: CMakeFiles/strasenfinder2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o -MF CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o.d -o CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o -c "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp"
 
-CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/Strasenfinder2.cpp" > CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.i
+CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp" > CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.i
 
-CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/Strasenfinder2.cpp" -o CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.s
+CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp" -o CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.s
 
 CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o: CMakeFiles/strasenfinder2.dir/flags.make
 CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/lane_detection/image_preprocessing/ImagePreProcessing.cpp
@@ -99,13 +99,13 @@ CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.s: cmak
 
 # Object files for target strasenfinder2
 strasenfinder2_OBJECTS = \
-"CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o" \
+"CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o" \
 "CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o"
 
 # External object files for target strasenfinder2
 strasenfinder2_EXTERNAL_OBJECTS =
 
-strasenfinder2: CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o
+strasenfinder2: CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o
 strasenfinder2: CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o
 strasenfinder2: CMakeFiles/strasenfinder2.dir/build.make
 strasenfinder2: /usr/local/lib/libopencv_gapi.4.9.0.dylib

@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o"
-  "CMakeFiles/strasenfinder2.dir/Strasenfinder2.cpp.o.d"
   "CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o"
   "CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o.d"
+  "CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o"
+  "CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o.d"
   "strasenfinder2"
   "strasenfinder2.pdb"
 )

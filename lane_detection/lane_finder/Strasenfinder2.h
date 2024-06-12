@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <numeric>
 #include <vector>
-#include "image_preprocessing/ImagePreProcessing.h"
+#include "../image_preprocessing/ImagePreProcessing.h"
 
 
 struct LineProperties {
