@@ -14,5 +14,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-add_executable(laneFinder laneFindingAlgorithmus.h laneFindingAlgorithmus.cpp image_preprocessing/ImagePreProcessing.h image_preprocessing/ImagePreProcessing.cpp)
-target_link_libraries(laneFinder ${OpenCV_LIBS})
+#add_executable(laneFinder laneFindingAlgorithmus.h laneFindingAlgorithmus.cpp image_preprocessing/ImagePreProcessing.h image_preprocessing/ImagePreProcessing.cpp)
+#target_link_libraries(laneFinder ${OpenCV_LIBS})
+
+add_executable(imagetester image_preprocessing/ImagePreProcessing.h image_preprocessing/ImagePreProcessing.cpp)
+target_link_libraries(imagetester ${OpenCV_LIBS})

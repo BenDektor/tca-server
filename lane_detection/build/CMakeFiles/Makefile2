@@ -63,7 +63,7 @@ CMAKE_BINARY_DIR = "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/laneFinder.dir/all
+all: CMakeFiles/imagetester.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,34 +71,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/laneFinder.dir/clean
+clean: CMakeFiles/imagetester.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/laneFinder.dir
+# Target rules for target CMakeFiles/imagetester.dir
 
 # All Build rule for target.
-CMakeFiles/laneFinder.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/build/CMakeFiles" --progress-num=1,2,3 "Built target laneFinder"
-.PHONY : CMakeFiles/laneFinder.dir/all
+CMakeFiles/imagetester.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/imagetester.dir/build.make CMakeFiles/imagetester.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/imagetester.dir/build.make CMakeFiles/imagetester.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/build/CMakeFiles" --progress-num=1,2 "Built target imagetester"
+.PHONY : CMakeFiles/imagetester.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/laneFinder.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/build/CMakeFiles" 3
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/laneFinder.dir/all
+CMakeFiles/imagetester.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/build/CMakeFiles" 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/imagetester.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/build/CMakeFiles" 0
-.PHONY : CMakeFiles/laneFinder.dir/rule
+.PHONY : CMakeFiles/imagetester.dir/rule
 
 # Convenience name for target.
-laneFinder: CMakeFiles/laneFinder.dir/rule
-.PHONY : laneFinder
+imagetester: CMakeFiles/imagetester.dir/rule
+.PHONY : imagetester
 
 # clean rule for target.
-CMakeFiles/laneFinder.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/clean
-.PHONY : CMakeFiles/laneFinder.dir/clean
+CMakeFiles/imagetester.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/imagetester.dir/build.make CMakeFiles/imagetester.dir/clean
+.PHONY : CMakeFiles/imagetester.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

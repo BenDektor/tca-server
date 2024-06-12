@@ -105,3 +105,88 @@ cv::Mat ImagePreProcessing::apply_mask_to_image(cv::Mat image, cv::Mat mask)
     cv::bitwise_and(image, mask, maskedImage);
     return maskedImage;
 }
+
+cv::Mat ImagePreProcessing::gaussianBlur(cv::Mat image, int kernelSize) {
+    cv::Mat gaussianBlurImage;
+    cv::GaussianBlur(image, gaussianBlurImage, cv::Size(kernelSize, kernelSize), 0, 0);
+    return gaussianBlurImage;
+}
+
+cv::Mat ImagePreProcessing::canny_edge_detection(cv::Mat image, int minVal, int maxVal) {
+    cv::Mat edgesImage;
+    cv::Canny(image, edgesImage, minVal, maxVal);
+    return edgesImage;
+}
+
+
+//TESTING PORPUSE//
+
+void onTrackbarChange(int, void* userdata) {
+    // Retrieve the user data
+    std::tuple<ImagePreProcessing*, cv::Mat, int*, int*, int*>* data = static_cast<std::tuple<ImagePreProcessing*, cv::Mat, int*, int*, int*>*>(userdata);
+    ImagePreProcessing* processor = std::get<0>(*data);
+    cv::Mat image = std::get<1>(*data);
+    int* minVal = std::get<2>(*data);
+    int* maxVal = std::get<3>(*data);
+    int* kernelSize = std::get<4>(*data);
+
+    // Ensure kernelSize is a positive odd number
+    if (*kernelSize % 2 == 0) {
+        (*kernelSize)++;
+    }
+    if (*kernelSize <= 0) {
+        *kernelSize = 1;
+    }
+
+    // Process the image
+    cv::Mat grayImage = processor->convert_to_gray(image);
+    cv::Mat blurredImage = processor->gaussianBlur(grayImage, *kernelSize);
+    cv::Mat edgesImage = processor->canny_edge_detection(blurredImage, *minVal, *maxVal);
+
+    // Show the result
+    cv::imshow("Edges", edgesImage);
+}
+
+cv::Mat ImagePreProcessing::hough_lines(cv::Mat edgesImage, double rho, double theta, int threshold, double minLineLength, double maxLineGap) {
+    std::vector<cv::Vec4i> lines;
+    cv::HoughLinesP(edgesImage, lines, rho, theta, threshold, minLineLength, maxLineGap);
+    cv::Mat lineImage = cv::Mat::zeros(edgesImage.size(), CV_8UC3);
+    for (const auto& line : lines) {
+        cv::line(lineImage, cv::Point(line[0], line[1]), cv::Point(line[2], line[3]), cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
+    }
+    return lineImage;
+}
+
+
+int main() {
+    // Read the image
+    std::string imagePath = "../finder_image3.jpeg";
+    cv::Mat image = cv::imread(imagePath);
+    if (image.empty()) {
+        std::cerr << "Error: Could not open image" << std::endl;
+        return -1;
+    }
+
+    // Initialize the processor
+    ImagePreProcessing processor;
+
+    // Parameters for trackbars
+    int minVal = 60;
+    int maxVal = 150;
+    int kernelSize = 5;
+
+    // Create windows
+    cv::namedWindow("Edges", cv::WINDOW_AUTOSIZE);
+
+    // Create trackbars
+    cv::createTrackbar("Min Val", "Edges", &minVal, 255, onTrackbarChange, new std::tuple<ImagePreProcessing*, cv::Mat, int*, int*, int*>(&processor, image, &minVal, &maxVal, &kernelSize));
+    cv::createTrackbar("Max Val", "Edges", &maxVal, 255, onTrackbarChange, new std::tuple<ImagePreProcessing*, cv::Mat, int*, int*, int*>(&processor, image, &minVal, &maxVal, &kernelSize));
+    cv::createTrackbar("Kernel Size", "Edges", &kernelSize, 31, onTrackbarChange, new std::tuple<ImagePreProcessing*, cv::Mat, int*, int*, int*>(&processor, image, &minVal, &maxVal, &kernelSize));
+
+    // Initial call to display the image
+    onTrackbarChange(0, new std::tuple<ImagePreProcessing*, cv::Mat, int*, int*, int*>(&processor, image, &minVal, &maxVal, &kernelSize));
+
+    // Wait for the user to press a key
+    cv::waitKey(0);
+    return 0;
+}

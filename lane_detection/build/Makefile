@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named laneFinder
+# Target rules for targets named imagetester
 
 # Build rule for target.
-laneFinder: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 laneFinder
-.PHONY : laneFinder
+imagetester: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 imagetester
+.PHONY : imagetester
 
 # fast build rule for target.
-laneFinder/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/build
-.PHONY : laneFinder/fast
+imagetester/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/imagetester.dir/build.make CMakeFiles/imagetester.dir/build
+.PHONY : imagetester/fast
 
 image_preprocessing/ImagePreProcessing.o: image_preprocessing/ImagePreProcessing.cpp.o
 .PHONY : image_preprocessing/ImagePreProcessing.o
 
 # target to build an object file
 image_preprocessing/ImagePreProcessing.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/image_preprocessing/ImagePreProcessing.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/imagetester.dir/build.make CMakeFiles/imagetester.dir/image_preprocessing/ImagePreProcessing.cpp.o
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.o
 
 image_preprocessing/ImagePreProcessing.i: image_preprocessing/ImagePreProcessing.cpp.i
@@ -142,7 +142,7 @@ image_preprocessing/ImagePreProcessing.i: image_preprocessing/ImagePreProcessing
 
 # target to preprocess a source file
 image_preprocessing/ImagePreProcessing.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/image_preprocessing/ImagePreProcessing.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/imagetester.dir/build.make CMakeFiles/imagetester.dir/image_preprocessing/ImagePreProcessing.cpp.i
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.i
 
 image_preprocessing/ImagePreProcessing.s: image_preprocessing/ImagePreProcessing.cpp.s
@@ -150,32 +150,8 @@ image_preprocessing/ImagePreProcessing.s: image_preprocessing/ImagePreProcessing
 
 # target to generate assembly for a file
 image_preprocessing/ImagePreProcessing.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/image_preprocessing/ImagePreProcessing.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/imagetester.dir/build.make CMakeFiles/imagetester.dir/image_preprocessing/ImagePreProcessing.cpp.s
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.s
-
-laneFindingAlgorithmus.o: laneFindingAlgorithmus.cpp.o
-.PHONY : laneFindingAlgorithmus.o
-
-# target to build an object file
-laneFindingAlgorithmus.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/laneFindingAlgorithmus.cpp.o
-.PHONY : laneFindingAlgorithmus.cpp.o
-
-laneFindingAlgorithmus.i: laneFindingAlgorithmus.cpp.i
-.PHONY : laneFindingAlgorithmus.i
-
-# target to preprocess a source file
-laneFindingAlgorithmus.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/laneFindingAlgorithmus.cpp.i
-.PHONY : laneFindingAlgorithmus.cpp.i
-
-laneFindingAlgorithmus.s: laneFindingAlgorithmus.cpp.s
-.PHONY : laneFindingAlgorithmus.s
-
-# target to generate assembly for a file
-laneFindingAlgorithmus.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/laneFinder.dir/build.make CMakeFiles/laneFinder.dir/laneFindingAlgorithmus.cpp.s
-.PHONY : laneFindingAlgorithmus.cpp.s
 
 # Help Target
 help:
@@ -185,13 +161,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... laneFinder"
+	@echo "... imagetester"
 	@echo "... image_preprocessing/ImagePreProcessing.o"
 	@echo "... image_preprocessing/ImagePreProcessing.i"
 	@echo "... image_preprocessing/ImagePreProcessing.s"
-	@echo "... laneFindingAlgorithmus.o"
-	@echo "... laneFindingAlgorithmus.i"
-	@echo "... laneFindingAlgorithmus.s"
 .PHONY : help
 
 
