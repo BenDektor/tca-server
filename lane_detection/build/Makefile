@@ -117,24 +117,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named strasenfinder2
+# Target rules for targets named lanehandler
 
 # Build rule for target.
-strasenfinder2: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 strasenfinder2
-.PHONY : strasenfinder2
+lanehandler: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lanehandler
+.PHONY : lanehandler
 
 # fast build rule for target.
-strasenfinder2/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/build
-.PHONY : strasenfinder2/fast
+lanehandler/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/build
+.PHONY : lanehandler/fast
 
 image_preprocessing/ImagePreProcessing.o: image_preprocessing/ImagePreProcessing.cpp.o
 .PHONY : image_preprocessing/ImagePreProcessing.o
 
 # target to build an object file
 image_preprocessing/ImagePreProcessing.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/image_preprocessing/ImagePreProcessing.cpp.o
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.o
 
 image_preprocessing/ImagePreProcessing.i: image_preprocessing/ImagePreProcessing.cpp.i
@@ -142,7 +142,7 @@ image_preprocessing/ImagePreProcessing.i: image_preprocessing/ImagePreProcessing
 
 # target to preprocess a source file
 image_preprocessing/ImagePreProcessing.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/image_preprocessing/ImagePreProcessing.cpp.i
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.i
 
 image_preprocessing/ImagePreProcessing.s: image_preprocessing/ImagePreProcessing.cpp.s
@@ -150,7 +150,7 @@ image_preprocessing/ImagePreProcessing.s: image_preprocessing/ImagePreProcessing
 
 # target to generate assembly for a file
 image_preprocessing/ImagePreProcessing.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/image_preprocessing/ImagePreProcessing.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/image_preprocessing/ImagePreProcessing.cpp.s
 .PHONY : image_preprocessing/ImagePreProcessing.cpp.s
 
 lane_finder/Strasenfinder2.o: lane_finder/Strasenfinder2.cpp.o
@@ -158,7 +158,7 @@ lane_finder/Strasenfinder2.o: lane_finder/Strasenfinder2.cpp.o
 
 # target to build an object file
 lane_finder/Strasenfinder2.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/lane_finder/Strasenfinder2.cpp.o
 .PHONY : lane_finder/Strasenfinder2.cpp.o
 
 lane_finder/Strasenfinder2.i: lane_finder/Strasenfinder2.cpp.i
@@ -166,7 +166,7 @@ lane_finder/Strasenfinder2.i: lane_finder/Strasenfinder2.cpp.i
 
 # target to preprocess a source file
 lane_finder/Strasenfinder2.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/lane_finder/Strasenfinder2.cpp.i
 .PHONY : lane_finder/Strasenfinder2.cpp.i
 
 lane_finder/Strasenfinder2.s: lane_finder/Strasenfinder2.cpp.s
@@ -174,8 +174,32 @@ lane_finder/Strasenfinder2.s: lane_finder/Strasenfinder2.cpp.s
 
 # target to generate assembly for a file
 lane_finder/Strasenfinder2.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/strasenfinder2.dir/build.make CMakeFiles/strasenfinder2.dir/lane_finder/Strasenfinder2.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/lane_finder/Strasenfinder2.cpp.s
 .PHONY : lane_finder/Strasenfinder2.cpp.s
+
+lane_handler/lane_handler.o: lane_handler/lane_handler.cpp.o
+.PHONY : lane_handler/lane_handler.o
+
+# target to build an object file
+lane_handler/lane_handler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/lane_handler/lane_handler.cpp.o
+.PHONY : lane_handler/lane_handler.cpp.o
+
+lane_handler/lane_handler.i: lane_handler/lane_handler.cpp.i
+.PHONY : lane_handler/lane_handler.i
+
+# target to preprocess a source file
+lane_handler/lane_handler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/lane_handler/lane_handler.cpp.i
+.PHONY : lane_handler/lane_handler.cpp.i
+
+lane_handler/lane_handler.s: lane_handler/lane_handler.cpp.s
+.PHONY : lane_handler/lane_handler.s
+
+# target to generate assembly for a file
+lane_handler/lane_handler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lanehandler.dir/build.make CMakeFiles/lanehandler.dir/lane_handler/lane_handler.cpp.s
+.PHONY : lane_handler/lane_handler.cpp.s
 
 # Help Target
 help:
@@ -185,13 +209,16 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... strasenfinder2"
+	@echo "... lanehandler"
 	@echo "... image_preprocessing/ImagePreProcessing.o"
 	@echo "... image_preprocessing/ImagePreProcessing.i"
 	@echo "... image_preprocessing/ImagePreProcessing.s"
 	@echo "... lane_finder/Strasenfinder2.o"
 	@echo "... lane_finder/Strasenfinder2.i"
 	@echo "... lane_finder/Strasenfinder2.s"
+	@echo "... lane_handler/lane_handler.o"
+	@echo "... lane_handler/lane_handler.i"
+	@echo "... lane_handler/lane_handler.s"
 .PHONY : help
 
 

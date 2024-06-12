@@ -4,6 +4,7 @@
 #include <numeric>
 #include <vector>
 #include "../image_preprocessing/ImagePreProcessing.h"
+#include <random>
 
 
 struct LineProperties {
@@ -57,6 +58,7 @@ class StrasenFinder2
         double median(std::vector<double> vec);
 
         std::vector<std::vector<LineProperties>> groupLines(const std::vector<LineProperties>& lines);
+        std::vector<std::vector<LineProperties>> groupLines2(const std::vector<LineProperties>& lines);
         float calculateAverageXIntercept(const std::vector<LineProperties>& group);
         
 };

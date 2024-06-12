@@ -97,14 +97,74 @@ std::vector<std::vector<LineProperties>> StrasenFinder2::groupLines(const std::v
     }
 
     // Print out the generated groups
-    /*for (size_t i = 0; i < groups.size(); ++i) {
+    for (size_t i = 0; i < groups.size(); ++i) {
         std::cout << "Group " << i + 1 << ":" << std::endl;
         for (const auto& line : groups[i]) {
             std::cout << "Angle: " << line.angle << ", X Intercept: " << line.xIntercept << std::endl;
         }
-    }*/
+    }
     return groups;
 }
+
+std::vector<std::vector<LineProperties>> StrasenFinder2::groupLines2(const std::vector<LineProperties>& lines) {
+    std::vector<std::vector<LineProperties>> bestGroups;
+    float minNumClusters = std::numeric_limits<float>::max();
+
+    // Set up random engine and shuffle the lines
+    std::vector<LineProperties> shuffledLines = lines;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(shuffledLines.begin(), shuffledLines.end(), std::default_random_engine(seed));
+
+    // Perform multiple iterations with shuffled orders
+    for (int iteration = 0; iteration < 10; ++iteration) {
+        std::shuffle(shuffledLines.begin(), shuffledLines.end(), std::default_random_engine(seed));
+
+        std::vector<std::vector<LineProperties>> groups;
+
+        for (const auto& line : shuffledLines) {
+            bool added = false;
+            for (auto& group : groups) {
+                // Counters for total lines and lines within 15% range
+                int totalLines = group.size() + 1; // Including the current line
+                int withinRangeCount = 0;
+
+                // Check if current line fits within the group
+                for (const auto& existingLine : group) {
+                    float threshold = 0.15 * std::abs(existingLine.xIntercept);
+                    if (std::abs(line.xIntercept - existingLine.xIntercept) <= threshold) {
+                        withinRangeCount++;
+                    }
+                }
+
+                // Check if at least 49% of lines are within the 15% range
+                if (withinRangeCount >= 0.49 * totalLines) {
+                    group.push_back(line);
+                    added = true;
+                    break; // Add to the first group that satisfies the condition
+                }
+            }
+            if (!added) {
+                groups.push_back({line}); // Create a new group if no suitable group is found
+            }
+        }
+
+        // Check the number of clusters formed
+        if (groups.size() > 1 && groups.size() < minNumClusters) {
+            bestGroups = groups;
+            minNumClusters = groups.size();
+        }
+    }
+
+    // Print out the best generated groups
+    for (size_t i = 0; i < bestGroups.size(); ++i) {
+        std::cout << "Group " << i + 1 << ":" << std::endl;
+        for (const auto& line : bestGroups[i]) {
+            std::cout << "Angle: " << line.angle << ", X Intercept: " << line.xIntercept << std::endl;
+        }
+    }
+    return bestGroups;
+}
+
 
 
 
@@ -126,7 +186,7 @@ StreetLaneResult StrasenFinder2::find_streetLanes(cv::Mat inputImage) {
         }
 
         // Group lines based on x-intercepts
-        std::vector<std::vector<LineProperties>> groups = groupLines(lineProperties);
+        std::vector<std::vector<LineProperties>> groups = groupLines2(lineProperties);
 
         if (groups.size() < 1) 
         {
@@ -193,7 +253,7 @@ StreetLaneResult StrasenFinder2::find_streetLanes(cv::Mat inputImage) {
 
 
 
-int main(){
+/*int main(){
     
     cv::Mat image = cv::imread("../images/size8.jpg");
 
@@ -241,4 +301,4 @@ int main(){
 
     cv::waitKey(0); // wait for a key press    
     return 0;
-}
+}*/
