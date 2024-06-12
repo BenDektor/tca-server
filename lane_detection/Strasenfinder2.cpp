@@ -13,27 +13,20 @@ cv::Mat StrasenFinder2::preProcessImage(cv::Mat inputImage) {
 
 
 
-
-
 bool StrasenFinder2::houghLines(cv::Mat maskedImage, cv::Mat originalImage, std::vector<cv::Vec4i>& lines)
 {
     bool success;
 
     lines.clear();
 
-    float rho = 2;
-    float pi = 3.14159265358979323846;
-    float theta = pi/180;
-    float threshold = 45;
-    //int minLineLength = 40;
-    int minLineLength = 100;
-    int maxLineGap = 10;
-
-
+    float rho = 1;
+    float theta = CV_PI /180;
+    float threshold = 75;
+    int minLineLength = 200;
+    int maxLineGap = 70;
     cv::HoughLinesP(maskedImage, lines, rho, theta, threshold, minLineLength, maxLineGap);
-
     std::cout << "HoughLines Total: " << lines.size() << std::endl;
-
+    
     // Check if we got more than one line
     if (!lines.empty()) {
 
@@ -70,6 +63,8 @@ CarPosition StrasenFinder2::determineCarPos(cv::Mat inputImage) {
         std::cout << "HoughLines returned success" <<std::endl;
     }
 }
+
+
 
 
 
