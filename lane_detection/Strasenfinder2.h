@@ -2,20 +2,24 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
+#include <vector>
 #include "image_preprocessing/ImagePreProcessing.h"
 
 
-struct LaneLines {
-    float posSlopeMean = -1.0f; // Initialize with neg values for firsttime check
-    double xInterceptPosMean = -1.0;
-    float negSlopeMean = -1.0f;
-    double xInterceptNegMean = -1.0;
+struct LineProperties {
+    float angle;
+    float xIntercept;
+    cv::Point startPoint;
+    cv::Point endPoint;
 };
 
-struct InterceptAndSlope {
-    double xIntercept;
-    double slope;
+
+struct Cluster {
+    std::vector<LineProperties> lines;
+    LineProperties centroid;
 };
+
+
 
 enum CarPosition {
     MID_OF_STREET = 0, //Two lanelines with different angles
@@ -42,12 +46,12 @@ class StrasenFinder2
 
         cv::Mat preProcessImage(cv::Mat inputImage);
 
-        bool houghLines(cv::Mat maskedImage, cv::Mat originalImage, std::vector<cv::Vec4i>& lines);
-        //LaneDetectionResult averageLaneLines(std::vector<cv::Vec4i> lines, cv::Mat originalImage);
-        //int calculate_steering_dir(LaneLines laneLines, cv::Mat originalImage);
+        bool houghLines(cv::Mat maskedImage, cv::Mat inputImage, std::vector<cv::Vec4i>& lines);
+        std::vector<LineProperties> calculateLineProperties(cv::Mat inputImage, std::vector<cv::Vec4i>& lines);
+        void clusterLines(std::vector<LineProperties>& lineProps);
+        double distance(const LineProperties& line1, const LineProperties& line2);
+        bool isOutlier(const LineProperties& line1, const LineProperties& line2, double threshold);
 
-        double median(std::vector<double> vec);
-
-        
+        double median(std::vector<double> vec);        
 
 };

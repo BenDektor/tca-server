@@ -13,7 +13,7 @@ cv::Mat StrasenFinder2::preProcessImage(cv::Mat inputImage) {
 
 
 
-bool StrasenFinder2::houghLines(cv::Mat maskedImage, cv::Mat originalImage, std::vector<cv::Vec4i>& lines)
+bool StrasenFinder2::houghLines(cv::Mat maskedImage, cv::Mat inputImage, std::vector<cv::Vec4i>& lines)
 {
     bool success;
 
@@ -29,12 +29,8 @@ bool StrasenFinder2::houghLines(cv::Mat maskedImage, cv::Mat originalImage, std:
     
     // Check if we got more than one line
     if (!lines.empty()) {
-
-        // Initialize lines image
-        //cv::Mat allLinesIm(maskedImage.size().height, maskedImage.size().width, CV_8UC3, cv::Scalar(0,0,0)); // CV_8UC3 to make it a 3 channel)
-        houghLinesImage = originalImage.clone();
+        houghLinesImage = inputImage.clone();
         // Loop through lines
-        // std::size_t can store the maximum size of a theoretically possible object of any type
         for (size_t i = 0; i != lines.size(); ++i) {
 
             // Draw line onto image
@@ -45,6 +41,33 @@ bool StrasenFinder2::houghLines(cv::Mat maskedImage, cv::Mat originalImage, std:
     }
     return success = false;   
 }
+
+// Calculate angles, x-intercepts, and line coordinates
+std::vector<LineProperties> StrasenFinder2::calculateLineProperties(cv::Mat inputImage, std::vector<cv::Vec4i>& lines) {
+    std::vector<LineProperties> lineProps;
+    for (const auto& line : lines) {
+        // Calculate angle of the line
+        float angle = std::atan2(line[3] - line[1], line[2] - line[0]);
+        // Calculate x-intercept
+        if(!tan(angle)){
+            continue; //skip for null division (horizontal lines)
+        }
+        float xIntercept = line[0] - (line[1] - inputImage.rows) / tan(angle);
+        // Store line start and end points
+        cv::Point startPoint(line[0], line[1]);
+        cv::Point endPoint(line[2], line[3]);
+
+        LineProperties lineProperty = {angle, xIntercept, startPoint, endPoint};
+
+         // Print line properties
+        std::cout << "Angle: " << lineProperty.angle << " X Intercept: " << lineProperty.xIntercept << " Start Point: " << lineProperty.startPoint << " End Point: " << lineProperty.endPoint << " " << tan(angle)<<std::endl;
+
+        lineProps.push_back(lineProperty);
+    }
+    return lineProps;
+}
+
+
 
 
 
@@ -61,6 +84,11 @@ CarPosition StrasenFinder2::determineCarPos(cv::Mat inputImage) {
     else
     {
         std::cout << "HoughLines returned success" <<std::endl;
+
+        std::vector<LineProperties> lineproperties = calculateLineProperties(inputImage, houghlines);
+        
+        // Perform k-means clustering
+        auto [cluster1, cluster2] = kMeansClustering(lineproperties);
     }
 }
 
@@ -71,7 +99,7 @@ CarPosition StrasenFinder2::determineCarPos(cv::Mat inputImage) {
 
 int main(){
     
-    cv::Mat image = cv::imread("../images/finder_image6.jpeg");
+    cv::Mat image = cv::imread("../images/test_image8.jpg");
 
     StrasenFinder2 strassenFinder;
     
