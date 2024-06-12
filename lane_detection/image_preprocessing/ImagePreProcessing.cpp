@@ -169,7 +169,7 @@ cv::Mat ImagePreProcessing::hough_lines(cv::Mat edgesImage, double rho, double t
 
 int main() {
     // Read the image
-    std::string imagePath = "../resized_image.jpg"; // Change to your image path
+    std::string imagePath = "../size14.jpg"; // Change to your image path
     cv::Mat image = cv::imread(imagePath);
     if (image.empty()) {
         std::cerr << "Error: Could not open image" << std::endl;
