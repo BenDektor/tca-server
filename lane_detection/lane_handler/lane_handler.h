@@ -6,7 +6,8 @@
 enum CarPosition {
     NO_STREET = 0,
     ON_STREET = 1,
-    OFF_STREET = 2
+    OFF_STREET_TO_LEFT = 2,
+    OFF_STREET_TO_RIGHT = 3,
 };
 
 
@@ -14,14 +15,25 @@ class LaneHandler {
 public:
     CarPosition getCarPosition(cv::Mat image);
 
+    int get_steering_dir();
+    int get_distance_to_street();
+    int get_angle_to_street();
+
 private:
     StrasenFinder2 strassenFinder;
 
     CarPosition handleOneLane(const std::vector<LineProperties>& lineGroup);
     CarPosition handleTwoLanes(const std::vector<LineProperties>& lineGroup1, const std::vector<LineProperties>& lineGroup2);
     
-
     LineProperties calculateAverageLineProperties(const std::vector<LineProperties>& lines);
+
+    bool checkCarOnStreet(const LineProperties& line1, const LineProperties& line2 = LineProperties());
+    int calculateSteeringDir(const LineProperties& line1, const LineProperties& line2);
+
+
+    int steering_dir;
+    int distance_to_street;
+    int angle_to_street;
 
 };
 

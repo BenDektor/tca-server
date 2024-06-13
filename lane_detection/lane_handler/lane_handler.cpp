@@ -7,24 +7,25 @@ LineProperties LaneHandler::calculateAverageLineProperties(const std::vector<Lin
     // Initialize accumulators for average calculation
     float avgAngle = 0.0f;
     float avgXIntercept = 0.0f;
-    cv::Point avgStartPoint(0, 0);
-    cv::Point avgEndPoint(0, 0);
 
-    // Calculate sums
+    // Calculate sums for angle and xIntercept
     for (const auto& line : lines) {
         avgAngle += line.angle;
         avgXIntercept += line.xIntercept;
-        avgStartPoint += line.startPoint;
-        avgEndPoint += line.endPoint;
     }
 
-    // Calculate averages
+    // Calculate averages for angle and xIntercept
     avgAngle /= lines.size();
     avgXIntercept /= lines.size();
-    avgStartPoint.x /= lines.size();
-    avgStartPoint.y /= lines.size();
-    avgEndPoint.x /= lines.size();
-    avgEndPoint.y /= lines.size();
+
+    // Calculate the start and end points based on the new logic
+    cv::Mat image = strassenFinder.houghLinesImage;
+
+    cv::Point avgStartPoint(static_cast<int>(avgXIntercept), image.rows); // (x = xIntercept, y = image.height)
+    int endPointY = image.rows / 5;
+    int endPointX = static_cast<int>(avgXIntercept + (endPointY - image.rows) / std::tan(avgAngle)); // Calculate x based on angle
+
+    cv::Point avgEndPoint(endPointX, endPointY);
 
     // Create and return the average LineProperties
     LineProperties avgLineProperties;
@@ -50,6 +51,28 @@ void drawAverageLine(cv::Mat& image, const LineProperties& line) {
 }
 
 
+// Function to check if the car is on the street
+bool LaneHandler::checkCarOnStreet(const LineProperties& line1, const LineProperties& line2) {
+    int imageWidth = strassenFinder.houghLinesImage.cols;
+    // Check if line1 xIntercept is within the image width range
+    if (line1.xIntercept >= 0 && line1.xIntercept <= imageWidth) {
+        return true;
+    }
+    // Check if line2 is different from a default-constructed LineProperties and within the image width range
+    LineProperties defaultLine;
+    if (line2.xIntercept != defaultLine.xIntercept && line2.xIntercept >= 0 && line2.xIntercept <= imageWidth) {
+        return true;
+    }
+    return false;
+}
+
+int LaneHandler::calculateSteeringDir(const LineProperties& line1, const LineProperties& line2){
+    LineProperties combinedAvgLine = calculateAverageLineProperties({line1, line2});
+    
+    int offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - combinedAvgLine.endPoint.x 
+    return offset_to_middle;
+};
+
 
 CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineGroup1, const std::vector<LineProperties>& lineGroup2){
     LineProperties avgLineGroup1 = calculateAverageLineProperties(lineGroup1);
@@ -62,28 +85,46 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
     std::cout << "Average Line Properties for Group 2:" << std::endl;
     printLineProperties(avgLineGroup2);
 
-
+    
 
     if(avgLineGroup1.angle < 0 && avgLineGroup2.angle < 0) {
         //Two left lanes detected (from bottom left to top right)
         std::cout << "Two left lanes" << std::endl;
+        bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
+        if(onStreet){
+            steering_dir = calculateSteeringDir(avgLineGroup1, avgLineGroup2);
+            return CarPosition::ON_STREET;
+        }
+        else{
+            //distance_to_street = calculateDistanceToStreet(avgLineGroup1, avgLineGroup2);
+            //angle_to_street = calculateAngleToStreet(avgLineGroup1, avgLineGroup2);
+            return CarPosition::OFF_STREET_TO_LEFT;
+        }
+        
     }
     else if (avgLineGroup1.angle > 0 && avgLineGroup2.angle > 0)
     {
         //Two right lanes detected (from bottom right to top left)
         std::cout << "Two right lanes" << std::endl;
+        std::cout << "Two left lanes" << std::endl;
+        bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
+        if(onStreet){
+            steering_dir = calculateSteeringDir(avgLineGroup1, avgLineGroup2);
+            return CarPosition::ON_STREET;
+        }
+        else{
+            //distance_to_street = calculateDistanceToStreet(avgLineGroup1, avgLineGroup2);
+            //angle_to_street = calculateAngleToStreet(avgLineGroup1, avgLineGroup2);
+            return CarPosition::OFF_STREET_TO_RIGHT;
+        }
 
     }
-    else if (avgLineGroup1.angle < 0 && avgLineGroup2.angle > 0)
+    else if (avgLineGroup1.angle < 0 && avgLineGroup2.angle > 0 || avgLineGroup1.angle > 0 && avgLineGroup2.angle < 0)
     {
         //group1 left lane, group2 right lane
         std::cout << "One left one right" << std::endl;
-
-    }
-    else if (avgLineGroup1.angle > 0 && avgLineGroup2.angle < 0)
-    {
-        //group1 right lane, group2 left lane
-        std::cout << "One right one left" << std::endl;
+        steering_dir = calculateSteeringDir(avgLineGroup1, avgLineGroup2);
+        return CarPosition::ON_STREET;
 
     }
 
@@ -149,7 +190,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
     cv::Mat houghImage = strassenFinder.houghLinesImage;
     // cv::Mat edgesImage = strassenFinder.edgesImage;
     cv::imshow("hough", houghImage);
-    cv::waitKey(0);
+
 
 
     return carPosition;
@@ -161,8 +202,23 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/finder_image2.jpeg");
+    cv::Mat image = cv::imread("../images/size24.jpg");
     CarPosition pos = laneHandler.getCarPosition(image);
+
+    if(pos == 1){
+        std::cout << "Car Position Result: " << "OnStreet" << std::endl;
+    }
+    else if (pos == 2){
+        std::cout << "Car Position Result: " << "OffStreet Street to the left" << std::endl;
+    }
+    else if (pos == 3){
+        std::cout << "Car Position Result: " << "OffStreet Street to the right" << std::endl;
+    }
+    else {
+        std::cout << "Car Position Result: " << "NoStreet" << std::endl;
+    }
+    cv::waitKey(0);
+
 }
 
 
