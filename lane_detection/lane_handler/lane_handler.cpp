@@ -257,7 +257,7 @@ std::pair<int, float> LaneHandler::calculateDistanceAndAngleToStreet(const LineP
     cv::putText(drawing_image, distance_text, cv::Point(10, 60), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
     // Calculate the angle between the given line and the vertical middle line
-    float angleToVertical = std::atan(std::abs(slope)) * 180.0 / CV_PI;
+    float angleToVertical = 90 - std::atan(std::abs(slope)) * 180.0 / CV_PI;
 
     // Draw angle label
     std::string angle_text = "Angle: " + std::to_string(angleToVertical) + " degrees";
@@ -292,7 +292,6 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
         if(onStreet){
             steering_dir = calculateSteeringDir(combinedAvgLine);
-            std::cout << "Steering direction: " << steering_dir << std::endl;
             return CarPosition::ON_STREET;
         }
         else{
@@ -310,7 +309,6 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
         if(onStreet){
             steering_dir = calculateSteeringDir(combinedAvgLine);
-            std::cout << "Steering direction: " << steering_dir << std::endl;
             return CarPosition::ON_STREET;
         }
         else{
@@ -326,7 +324,6 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         //group1 left lane, group2 right lane
         std::cout << "One left one right" << std::endl;
         steering_dir = calculateSteeringDir(combinedAvgLine);
-        std::cout << "Steering direction: " << steering_dir << std::endl;
         return CarPosition::ON_STREET;
 
     }
@@ -418,17 +415,22 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/size6.jpg");
+    cv::Mat image = cv::imread("../images/finder_image3.jpeg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == CarPosition::ON_STREET){
         std::cout << "Car Position Result: " << "OnStreet" << std::endl;
+        std::cout << "Steering Direction: " << laneHandler.get_steering_dir() << std::endl;
     }
     else if (pos == CarPosition::OFF_STREET_TO_LEFT){
         std::cout << "Car Position Result: " << "OffStreet Street to the left" << std::endl;
-    }
+        std::cout << "Distance to Street: " << laneHandler.get_distance_to_street() << std::endl;
+        std::cout << "Angle to Street: " << laneHandler.get_angle_to_street() << std::endl;
+    }   
     else if (pos == CarPosition::OFF_STREET_TO_RIGHT){
         std::cout << "Car Position Result: " << "OffStreet Street to the right" << std::endl;
+        std::cout << "Distance to Street: " << laneHandler.get_distance_to_street() << std::endl;
+        std::cout << "Angle to Street: " << laneHandler.get_angle_to_street() << std::endl;
     }
     else if (pos == CarPosition::NO_STREET){
         std::cout << "Car Position Result: " << "NoStreet" << std::endl;
