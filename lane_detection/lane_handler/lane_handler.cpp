@@ -120,11 +120,28 @@ void printLineProperties(const LineProperties& lineProps) {
     std::cout << "End Point: (" << lineProps.endPoint.x << ", " << lineProps.endPoint.y << ")" << std::endl;
 }
 
-void LaneHandler::drawAverageLine(const LineProperties& line) {
+void LaneHandler::drawAverageLine(const LineProperties& line, const std::string& color) {
     cv::Point pt1(line.startPoint);
     cv::Point pt2(line.endPoint);
-    cv::line(drawing_image, pt1, pt2, cv::Scalar(0, 255, 0), 2); // Green color line with thickness 2
+
+    cv::Scalar lineColor;
+
+    // Determine color based on input string
+    if (color == "blue") {
+        lineColor = cv::Scalar(255, 0, 0); // Blue color
+    } else if (color == "red") {
+        lineColor = cv::Scalar(0, 0, 255); // Red color
+    } else if (color == "green") {
+        lineColor = cv::Scalar(0, 255, 0); // Green color
+    } else {
+        // Default to green if color string is unrecognized
+        lineColor = cv::Scalar(0, 255, 0); // Green color
+    }
+
+    // Draw the line
+    cv::line(drawing_image, pt1, pt2, lineColor, 2); // Draw line with specified color and thickness 2
 }
+
 
 
 // Function to check if the car is on the street
@@ -155,7 +172,7 @@ int LaneHandler::calculateSteeringDir(const LineProperties& line1, const LinePro
     printLineProperties(combinedAvgLine);
 
 
-    drawAverageLine(combinedAvgLine);
+    drawAverageLine(combinedAvgLine, "blue");
     
     int offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - combinedAvgLine.endPoint.x; 
     return offset_to_middle;
@@ -170,8 +187,8 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
 
 
     // Draw average lines on a copy of the original image
-    drawAverageLine(avgLineGroup1);
-    drawAverageLine(avgLineGroup2);
+    drawAverageLine(avgLineGroup1, "green");
+    drawAverageLine(avgLineGroup2, "green");
 
     std::cout << "Average Line Properties for Group 1:" << std::endl;
     printLineProperties(avgLineGroup1);
