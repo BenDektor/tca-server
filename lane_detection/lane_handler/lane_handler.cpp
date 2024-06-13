@@ -120,7 +120,7 @@ void printLineProperties(const LineProperties& lineProps) {
     std::cout << "End Point: (" << lineProps.endPoint.x << ", " << lineProps.endPoint.y << ")" << std::endl;
 }
 
-void LaneHandler::drawLine(const LineProperties& line, const std::string& color) {
+void LaneHandler::drawLine(const LineProperties& line, const std::string& color, int strength) {
     cv::Point pt1(line.startPoint);
     cv::Point pt2(line.endPoint);
 
@@ -139,8 +139,19 @@ void LaneHandler::drawLine(const LineProperties& line, const std::string& color)
     }
 
     // Draw the line
-    cv::line(drawing_image, pt1, pt2, lineColor, 2); // Draw line with specified color and thickness 2
+    cv::line(drawing_image, pt1, pt2, lineColor, strength); // Draw line with specified color and thickness 2
 }
+
+void LaneHandler::drawOffsetLines(int xValue) {
+    cv::Point pt1(xValue, drawing_image.rows / 5);
+    cv::Point pt2(drawing_image.cols / 2, drawing_image.rows / 5);
+    drawLine(LineProperties{0.0f, 0.0f, pt1, pt2}, "green", 2);
+
+    cv::Point pt3(pt1.x, pt1.y + 20);
+    cv::Point pt4(pt1.x, pt1.y - 20);
+    drawLine(LineProperties{0.0f, 0.0f, pt3, pt4}, "green", 3);
+}
+
 
 
 
@@ -174,23 +185,41 @@ int LaneHandler::calculateSteeringDir(const LineProperties& line1, const LinePro
 
     drawLine(combinedAvgLine, "blue");
 
-    // Draw offset line (steering line)
-    cv::Point pt1(combinedAvgLine.endPoint.x, drawing_image.rows / 5);
-    cv::Point pt2(drawing_image.cols / 2, drawing_image.rows / 5);
-    drawLine(LineProperties{0.0f, 0.0f, pt1, pt2}, "red");
-
-
+    drawOffsetLines(combinedAvgLine.endPoint.x);
     
     int offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - combinedAvgLine.endPoint.x;  //if positive vale the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
-    
     
     // Draw offset label
     std::string offset_text = "Offset: " + std::to_string(offset_to_middle);
     cv::putText(drawing_image, offset_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
     
-    
     return offset_to_middle;
-};
+}
+
+
+
+int LaneHandler::calculateSteeringDir(const LineProperties& line1){
+    drawLine(line1, "blue");
+
+    int offset_to_middle;
+
+    // Draw offset line (steering line)
+    cv::Point pt1;
+    if(line1.endPoint.y > line1.startPoint.y){
+        drawOffsetLines(line1.startPoint.x);
+
+        offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line1.startPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
+    }
+    else{
+        drawOffsetLines(line1.endPoint.x);
+
+        offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line1.endPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
+    }
+
+    return offset_to_middle;
+}
+
+
 
 
 CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineGroup1, const std::vector<LineProperties>& lineGroup2){
@@ -203,8 +232,8 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
     drawLine(avgLineGroup2, "green");
 
     // Draw vertical line using drawLine function
-    cv::Point pt1(drawing_image.cols / 2, drawing_image.rows);
-    cv::Point pt2(drawing_image.cols / 2, drawing_image.rows / 5);
+    cv::Point pt1(drawing_image.cols / 2, drawing_image.rows / 5 + 15);
+    cv::Point pt2(drawing_image.cols / 2, drawing_image.rows / 5 - 15);
     drawLine(LineProperties{0.0f, 0.0f, pt1, pt2}, "red");
 
 
@@ -259,11 +288,32 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         return CarPosition::ON_STREET;
 
     }
-
-    // Display or save the image with drawn lines (optional)
 }
 
 
+
+CarPosition LaneHandler::handleOneLane(const std::vector<LineProperties>& lineGroup){
+    LineProperties avgLine = calculateAverageLineProperties(lineGroup);
+    
+    printLineProperties(avgLine);
+
+    // Draw vertical line using drawLine function
+    cv::Point pt1(drawing_image.cols / 2, drawing_image.rows / 5 + 15);
+    cv::Point pt2(drawing_image.cols / 2, drawing_image.rows / 5 - 15);
+    drawLine(LineProperties{0.0f, 0.0f, pt1, pt2}, "red");
+
+    bool onStreet = checkCarOnStreet(avgLine);
+    if(onStreet){
+        steering_dir = calculateSteeringDir(avgLine);
+        std::cout << "One left lane" << std::endl;
+        std::cout << "Steering direction: " << steering_dir << std::endl;
+        return CarPosition::ON_STREET;
+    }
+    else{
+        //set distance and angle to street TODO
+    }
+
+}
 
 
 CarPosition LaneHandler::getCarPosition(cv::Mat image) {
@@ -292,11 +342,11 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
             std::cout << "No street lanes detected." << std::endl;
             carPosition = CarPosition::NO_STREET;
         case StreetLaneStatus::ONE_LANE:
-            std::cout << "One street lane detected. not handled yet" << std::endl;
+            std::cout << "One street lane detected" << std::endl;
             //TWO Possibilites:
             // ON_STREET -> set steering_dir
             // OFF_STREET -> set distance and angle of street
-            //carPosition = handleOneLane(result.groups[0]);
+            carPosition = handleOneLane(result.groups[0]);
             break; 
         case StreetLaneStatus::TWO_LANES:
             //TWO Possibilites:
@@ -326,7 +376,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/size5.jpg");
+    cv::Mat image = cv::imread("../images/size2.jpg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == 1){
