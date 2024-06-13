@@ -181,6 +181,33 @@ void LaneHandler::drawVerticalHelperLine(){
     drawLine(LineProperties{0.0f, 0.0f, pt1, pt2}, "red");
 }
 
+void LaneHandler::drawCarPositionText(CarPosition position) {
+    std::string positionText;
+
+    switch (position) {
+        case CarPosition::NO_STREET:
+            positionText = "Car Position: No Street";
+            break;
+        case CarPosition::ON_STREET:
+            positionText = "Car Position: On Street";
+            break;
+        case CarPosition::OFF_STREET_TO_LEFT:
+            positionText = "Car Position: Off Street (Left)";
+            break;
+        case CarPosition::OFF_STREET_TO_RIGHT:
+            positionText = "Car Position: Off Street (Right)";
+            break;
+        case CarPosition::UNKNOWN:
+            positionText = "Car Position: Unknown";
+            break;
+        default:
+            positionText = "Car Position: Unknown";
+            break;
+    }
+
+    cv::putText(drawing_image, positionText, cv::Point(drawing_image.cols - 500, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+}
+
 
 
 
@@ -404,6 +431,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
     // cv::Mat edgesImage = strassenFinder.edgesImage;
     cv::imshow("hough", houghImage);
 
+    drawCarPositionText(carPosition);
     cv::imshow("Average Lines", drawing_image);
 
     temp_carPosition = carPosition;
@@ -417,7 +445,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/size4.jpg");
+    cv::Mat image = cv::imread("../images/finder_image7.jpeg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == CarPosition::ON_STREET){

@@ -39,6 +39,7 @@ private:
     void drawLine(const LineProperties &line, const std::string &color, int strength = 2);
     void drawOffsetLines(int xValue);
     void drawVerticalHelperLine();
+    void drawCarPositionText(CarPosition position); 
     cv::Mat drawing_image;
 
     int steering_dir;
