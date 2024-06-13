@@ -98,7 +98,7 @@ LineProperties LaneHandler::calculateAverageLineProperties(const std::vector<Lin
     higherYPoint.x = lowerYPoint.x + (image.rows - lowerYPoint.y) / std::tan(avgAngle);
 
     // Calculate x-intercept using the adjusted points and angle
-    float avgXIntercept = lowerYPoint.x;
+    float avgXIntercept = higherYPoint.x;
 
     // Create and return the average LineProperties
     LineProperties avgLineProperties;
@@ -165,6 +165,8 @@ int LaneHandler::calculateSteeringDir(const LineProperties& line1, const LinePro
 CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineGroup1, const std::vector<LineProperties>& lineGroup2){
     LineProperties avgLineGroup1 = calculateAverageLineProperties(lineGroup1);
     LineProperties avgLineGroup2 = calculateAverageLineProperties(lineGroup2);
+
+    
 
 
     // Draw average lines on a copy of the original image
@@ -253,7 +255,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
             std::cout << "No street lanes detected." << std::endl;
             carPosition = CarPosition::NO_STREET;
         case StreetLaneStatus::ONE_LANE:
-            std::cout << "One street lane detected." << std::endl;
+            std::cout << "One street lane detected. not handled yet" << std::endl;
             //TWO Possibilites:
             // ON_STREET -> set steering_dir
             // OFF_STREET -> set distance and angle of street
@@ -287,7 +289,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/finder_image3.jpeg");
+    cv::Mat image = cv::imread("../images/size1.jpg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == 1){
