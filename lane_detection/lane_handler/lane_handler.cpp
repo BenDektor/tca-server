@@ -1,41 +1,93 @@
 #include "lane_handler.h"
 #include <iostream>
 
-
-// Function to calculate average LineProperties from a vector of LineProperties
-LineProperties LaneHandler::calculateAverageLineProperties(const std::vector<LineProperties>& lines) {
-    // Initialize accumulators for average calculation
-    float avgAngle = 0.0f;
-    float avgXIntercept = 0.0f;
-
-    // Calculate sums for angle and xIntercept
-    for (const auto& line : lines) {
-        avgAngle += line.angle;
-        avgXIntercept += line.xIntercept;
+LineProperties LaneHandler::calculateAverageLinePropertiesOfAverages(const std::vector<LineProperties>& lines) {
+    if (lines.size() != 2) {
+        // Handle cases where there are not exactly two lines to average
+        std::cout << "ERROR in LaneHandler" << std::endl;
+        return lines.empty() ? LineProperties() : lines[0];
     }
 
-    // Calculate averages for angle and xIntercept
-    avgAngle /= lines.size();
-    avgXIntercept /= lines.size();
+    // Extract the points
+    cv::Point line1Start = lines[0].startPoint;
+    cv::Point line1End = lines[0].endPoint;
+    cv::Point line2Start = lines[1].startPoint;
+    cv::Point line2End = lines[1].endPoint;
 
-    // Calculate the start and end points based on the new logic
+    // Determine the correct start and end points based on y-values
+    std::vector<cv::Point> points = {line1Start, line1End, line2Start, line2End};
+    std::sort(points.begin(), points.end(), [](const cv::Point& a, const cv::Point& b) {
+        return a.y > b.y;
+    });
+
+    // After sorting, the first two points will have the highest y-values (start points)
+    // and the last two points will have the lowest y-values (end points)
+    cv::Point midStartPoint = (points[0] + points[1]) * 0.5;
+    cv::Point midEndPoint = (points[2] + points[3]) * 0.5;
+
+    // Calculate the angle based on the midpoints
+    float deltaY = midEndPoint.y - midStartPoint.y;
+    float deltaX = midEndPoint.x - midStartPoint.x;
+    float avgAngle = std::atan2(deltaY, deltaX); // Angle in radians
+
+    // Calculate x-intercept using the start point and angle
     cv::Mat image = strassenFinder.houghLinesImage;
-
-    cv::Point avgStartPoint(static_cast<int>(avgXIntercept), image.rows); // (x = xIntercept, y = image.height)
-    int endPointY = image.rows / 5;
-    int endPointX = static_cast<int>(avgXIntercept + (endPointY - image.rows) / std::tan(avgAngle)); // Calculate x based on angle
-
-    cv::Point avgEndPoint(endPointX, endPointY);
+    float avgXIntercept = midStartPoint.x - (midStartPoint.y - image.rows) / std::tan(avgAngle);
 
     // Create and return the average LineProperties
     LineProperties avgLineProperties;
-    avgLineProperties.angle = avgAngle;
+    avgLineProperties.angle = avgAngle; // Use radians for internal calculations
+    avgLineProperties.xIntercept = avgXIntercept;
+    avgLineProperties.startPoint = midStartPoint;
+    avgLineProperties.endPoint = midEndPoint;
+
+    return avgLineProperties;
+}
+
+
+
+
+LineProperties LaneHandler::calculateAverageLineProperties(const std::vector<LineProperties>& lines) {
+    if (lines.size() < 2) {
+        // Handle cases where there are not enough lines to average
+        return lines.empty() ? LineProperties() : lines[0];
+    }
+
+    // Initialize accumulators for start and end points
+    cv::Point avgStartPoint(0, 0);
+    cv::Point avgEndPoint(0, 0);
+
+    // Calculate sums for start and end points
+    for (const auto& line : lines) {
+        avgStartPoint += line.startPoint;
+        avgEndPoint += line.endPoint;
+    }
+
+    // Calculate the actual midpoints
+    avgStartPoint.x /= lines.size();
+    avgStartPoint.y /= lines.size();
+    avgEndPoint.x /= lines.size();
+    avgEndPoint.y /= lines.size();
+
+    // Calculate the angle based on the midpoints
+    float deltaY = avgEndPoint.y - avgStartPoint.y;
+    float deltaX = avgEndPoint.x - avgStartPoint.x;
+    float avgAngle = std::atan2(deltaY, deltaX); // Angle in radians
+
+    // Calculate x-intercept using the start point and angle
+    cv::Mat image = strassenFinder.houghLinesImage;
+    float avgXIntercept = avgStartPoint.x - (avgStartPoint.y - image.rows) / std::tan(avgAngle);
+
+    // Create and return the average LineProperties
+    LineProperties avgLineProperties;
+    avgLineProperties.angle = avgAngle; // Use radians for internal calculations
     avgLineProperties.xIntercept = avgXIntercept;
     avgLineProperties.startPoint = avgStartPoint;
     avgLineProperties.endPoint = avgEndPoint;
 
     return avgLineProperties;
 }
+
 
 void printLineProperties(const LineProperties& lineProps) {
     std::cout << "Angle: " << lineProps.angle << ", ";
@@ -67,7 +119,7 @@ bool LaneHandler::checkCarOnStreet(const LineProperties& line1, const LineProper
 }
 
 int LaneHandler::calculateSteeringDir(const LineProperties& line1, const LineProperties& line2){
-    LineProperties combinedAvgLine = calculateAverageLineProperties({line1, line2});
+    LineProperties combinedAvgLine = calculateAverageLinePropertiesOfAverages({line1, line2});
 
     std::cout << "Line 1:" << std::endl;
     printLineProperties(line1);
@@ -76,7 +128,7 @@ int LaneHandler::calculateSteeringDir(const LineProperties& line1, const LinePro
     printLineProperties(line2);
     
     std::cout << "Combined Average Line:" << std::endl;
-printLineProperties(combinedAvgLine);
+    printLineProperties(combinedAvgLine);
 
 
     drawAverageLine(combinedAvgLine);
@@ -164,7 +216,8 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
         for (size_t i = 0; i < result.groups.size(); ++i) {
             std::cout << "Group " << i + 1 << " size: " << result.groups[i].size() << std::endl;
             for (const auto& line : result.groups[i]) {
-                std::cout << "  Angle: " << line.angle << ", X Intercept: " << line.xIntercept << std::endl;
+                std::cout << "  Angle: " << line.angle << ", X Intercept: " << line.xIntercept;
+                std::cout << "  Angle: " << line.startPoint << ", X Intercept: " << line.endPoint << std::endl;
             }
         }
     } else {
@@ -211,7 +264,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/size24.jpg");
+    cv::Mat image = cv::imread("../images/size2.jpg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == 1){

@@ -26,6 +26,7 @@ private:
     CarPosition handleTwoLanes(const std::vector<LineProperties>& lineGroup1, const std::vector<LineProperties>& lineGroup2);
     
     LineProperties calculateAverageLineProperties(const std::vector<LineProperties>& lines);
+    LineProperties calculateAverageLinePropertiesOfAverages(const std::vector<LineProperties>& lines);
 
     bool checkCarOnStreet(const LineProperties& line1, const LineProperties& line2 = LineProperties());
     int calculateSteeringDir(const LineProperties& line1, const LineProperties& line2);
