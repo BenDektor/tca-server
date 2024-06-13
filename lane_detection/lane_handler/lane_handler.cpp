@@ -171,8 +171,16 @@ bool LaneHandler::checkCarOnStreet(const LineProperties& line1, const LineProper
         return true;
     }
     // Check if line2 is different from a default-constructed LineProperties and within the image width range
-    LineProperties defaultLine;
-    if (line2.xIntercept != defaultLine.xIntercept && line2.xIntercept >= 0 && line2.xIntercept <= imageWidth) {
+    if (line2.xIntercept >= 0 && line2.xIntercept <= imageWidth) {        
+        return true;
+    }
+    return false;
+}
+
+bool LaneHandler::checkCarOnStreet(const LineProperties& line) {
+    int imageWidth = strassenFinder.houghLinesImage.cols;
+    // Check if line xIntercept is within the image width range
+    if (line.xIntercept >= 0 && line.xIntercept <= imageWidth) {
         return true;
     }
     return false;
@@ -202,7 +210,7 @@ int LaneHandler::calculateSteeringDir(const LineProperties& line){
     return offset_to_middle;
 }
 
-int LaneHandler::calculateDistanceAndAngleToStreet(const LineProperties &line) {
+std::pair<int, float> LaneHandler::calculateDistanceAndAngleToStreet(const LineProperties &line) {
     printLineProperties(line);
 
     // Get the middle x-coordinate of the image
@@ -227,7 +235,14 @@ int LaneHandler::calculateDistanceAndAngleToStreet(const LineProperties &line) {
     std::string distance_text = "Distance: " + std::to_string(distanceToStreet);
     cv::putText(drawing_image, distance_text, cv::Point(10, 60), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
-    return distanceToStreet;
+    // Calculate the angle between the given line and the vertical middle line
+    float angleToVertical = std::atan(std::abs(slope)) * 180.0 / CV_PI;
+
+    // Draw angle label
+    std::string angle_text = "Angle: " + std::to_string(angleToVertical) + " degrees";
+    cv::putText(drawing_image, angle_text, cv::Point(10, 90), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+
+    return std::make_pair(distanceToStreet, angleToVertical);
 }
 
 
@@ -236,22 +251,18 @@ int LaneHandler::calculateDistanceAndAngleToStreet(const LineProperties &line) {
 CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineGroup1, const std::vector<LineProperties>& lineGroup2){
     LineProperties avgLineGroup1 = calculateAverageLineProperties(lineGroup1);
     LineProperties avgLineGroup2 = calculateAverageLineProperties(lineGroup2);
-
     LineProperties combinedAvgLine = calculateAverageLinePropertiesOfAverages({avgLineGroup1, avgLineGroup2});
 
     // Draw average lines on a copy of the original image
     drawLine(avgLineGroup1, "green");
     drawLine(avgLineGroup2, "green");
-
     drawLine(combinedAvgLine, "blue");
 
 
-    std::cout << "Average Line Properties for Group 1:" << std::endl;
+    /*std::cout << "Average Line Properties for Group 1:" << std::endl;
     printLineProperties(avgLineGroup1);
-
     std::cout << "Average Line Properties for Group 2:" << std::endl;
-    printLineProperties(avgLineGroup2);
-
+    printLineProperties(avgLineGroup2);*/
     
 
     if(avgLineGroup1.angle < 0 && avgLineGroup2.angle < 0) {
@@ -259,15 +270,14 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         std::cout << "Two left lanes" << std::endl;
         bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
         if(onStreet){
-
-
             steering_dir = calculateSteeringDir(combinedAvgLine);
             std::cout << "Steering direction: " << steering_dir << std::endl;
             return CarPosition::ON_STREET;
         }
         else{
-            //distance_to_street = calculateDistanceToStreet(avgLineGroup1, avgLineGroup2);
-            //angle_to_street = calculateAngleToStreet(avgLineGroup1, avgLineGroup2);
+            std::pair<int, float> result = calculateDistanceAndAngleToStreet(combinedAvgLine);
+            distance_to_street = result.first;
+            angle_to_street = result.second;
             return CarPosition::OFF_STREET_TO_LEFT;
         }
         
@@ -278,15 +288,14 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         std::cout << "Two right lanes" << std::endl;
         bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
         if(onStreet){
-
-
             steering_dir = calculateSteeringDir(combinedAvgLine);
             std::cout << "Steering direction: " << steering_dir << std::endl;
             return CarPosition::ON_STREET;
         }
         else{
-            distance_to_street = calculateDistanceAndAngleToStreet(combinedAvgLine);
-            //angle_to_street = calculateAngleToStreet(avgLineGroup1, avgLineGroup2);
+            std::pair<int, float> result = calculateDistanceAndAngleToStreet(combinedAvgLine);
+            distance_to_street = result.first;
+            angle_to_street = result.second;
             return CarPosition::OFF_STREET_TO_RIGHT;
         }
 
@@ -295,12 +304,13 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
     {
         //group1 left lane, group2 right lane
         std::cout << "One left one right" << std::endl;
-        
         steering_dir = calculateSteeringDir(combinedAvgLine);
         std::cout << "Steering direction: " << steering_dir << std::endl;
         return CarPosition::ON_STREET;
 
     }
+
+    return CarPosition::UNKNOWN;
 }
 
 
@@ -311,16 +321,25 @@ CarPosition LaneHandler::handleOneLane(const std::vector<LineProperties>& lineGr
 
     bool onStreet = checkCarOnStreet(avgLine);
     if(onStreet){
-
         steering_dir = calculateSteeringDir(avgLine);
         std::cout << "One left lane" << std::endl;
         std::cout << "Steering direction: " << steering_dir << std::endl;
         return CarPosition::ON_STREET;
     }
     else{
-        //set distance and angle to street TODO
+        std::pair<int, float> result = calculateDistanceAndAngleToStreet(avgLine);
+        distance_to_street = result.first;
+        angle_to_street = result.second;
+
+        if(avgLine.angle < 0){
+            return CarPosition::OFF_STREET_TO_LEFT;
+        }
+        else if (avgLine.angle > 0){
+            return CarPosition::OFF_STREET_TO_RIGHT;
+        }   
     }
 
+    return CarPosition::UNKNOWN;
 }
 
 
@@ -331,7 +350,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
 
 
     // Print groups if any were found
-    if (!result.groups.empty()) {
+    /*if (!result.groups.empty()) {
         std::cout << "Number of groups found: " << result.groups.size() << std::endl;
         for (size_t i = 0; i < result.groups.size(); ++i) {
             std::cout << "Group " << i + 1 << " size: " << result.groups[i].size() << std::endl;
@@ -342,7 +361,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
         }
     } else {
         std::cout << "No groups found." << std::endl;
-    }
+    }*/
 
     CarPosition carPosition;
     switch (result.status) {
@@ -351,21 +370,13 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
             carPosition = CarPosition::NO_STREET;
         case StreetLaneStatus::ONE_LANE:
             std::cout << "One street lane detected" << std::endl;
-            //TWO Possibilites:
-            // ON_STREET -> set steering_dir
-            // OFF_STREET -> set distance and angle of street
             carPosition = handleOneLane(result.groups[0]);
             break; 
         case StreetLaneStatus::TWO_LANES:
-            //TWO Possibilites:
-            // ON_STREET -> set steering_dir
-            // OFF_STREET -> set distance and angle of street
             std::cout << "Two street lanes detected." << std::endl;
             carPosition = handleTwoLanes(result.groups[0], result.groups[1]);
             break;
     }
-
-
 
     // Optionally, you can retrieve and display processed images if needed
     // cv::Mat blurredImage = strassenFinder.blurredImage;
@@ -384,23 +395,25 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/finder_image3.jpeg");
+    cv::Mat image = cv::imread("../images/finder_image2.jpeg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
-    if(pos == 1){
+    if(pos == CarPosition::ON_STREET){
         std::cout << "Car Position Result: " << "OnStreet" << std::endl;
     }
-    else if (pos == 2){
+    else if (pos == CarPosition::OFF_STREET_TO_LEFT){
         std::cout << "Car Position Result: " << "OffStreet Street to the left" << std::endl;
     }
-    else if (pos == 3){
+    else if (pos == CarPosition::OFF_STREET_TO_RIGHT){
         std::cout << "Car Position Result: " << "OffStreet Street to the right" << std::endl;
     }
-    else {
+    else if (pos == CarPosition::NO_STREET){
         std::cout << "Car Position Result: " << "NoStreet" << std::endl;
     }
+    else {
+        std::cout << "Unknwon Car Position" << std::endl;
+    }
     cv::waitKey(0);
-
 }
 
 

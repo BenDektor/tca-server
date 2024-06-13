@@ -9,6 +9,7 @@ enum CarPosition
     ON_STREET = 1,
     OFF_STREET_TO_LEFT = 2,
     OFF_STREET_TO_RIGHT = 3,
+    UNKNOWN = 4,
 };
 
 class LaneHandler
@@ -29,10 +30,11 @@ private:
     LineProperties calculateAverageLineProperties(const std::vector<LineProperties> &lines);
     LineProperties calculateAverageLinePropertiesOfAverages(const std::vector<LineProperties> &lines);
 
-    bool checkCarOnStreet(const LineProperties &line1, const LineProperties &line2 = LineProperties());
+    bool checkCarOnStreet(const LineProperties &line1, const LineProperties &line2);
+    bool checkCarOnStreet(const LineProperties& line);
     int calculateSteeringDir(const LineProperties &line);
 
-    int calculateDistanceToStreet(const LineProperties &line);
+    std::pair<int, float> calculateDistanceAndAngleToStreet(const LineProperties &line);
 
     void drawLine(const LineProperties &line, const std::string &color, int strength = 2);
     void drawOffsetLines(int xValue);
@@ -41,7 +43,7 @@ private:
 
     int steering_dir;
     int distance_to_street;
-    int angle_to_street;
+    float angle_to_street;
 };
 
 #endif // LANE_HANDLER_H
