@@ -32,8 +32,8 @@ private:
 
     bool checkCarOnStreet(const LineProperties &line1, const LineProperties &line2);
     bool checkCarOnStreet(const LineProperties& line);
+    
     int calculateSteeringDir(const LineProperties &line);
-
     std::pair<int, float> calculateDistanceAndAngleToStreet(const LineProperties &line);
 
     void drawLine(const LineProperties &line, const std::string &color, int strength = 2);
@@ -44,6 +44,8 @@ private:
     int steering_dir;
     int distance_to_street;
     float angle_to_street;
+
+    CarPosition temp_carPosition = CarPosition::UNKNOWN;
 };
 
 #endif // LANE_HANDLER_H

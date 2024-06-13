@@ -1,6 +1,27 @@
 #include "lane_handler.h"
 #include <iostream>
 
+
+int LaneHandler::get_steering_dir(){
+    if(temp_carPosition != CarPosition::ON_STREET){
+        std::cout << "Warning: Steering Dir should only be called when CARPOSITION::ON_STREET" << std::endl;
+    }
+    return steering_dir;
+}
+int LaneHandler::get_distance_to_street(){
+    if(temp_carPosition != CarPosition::OFF_STREET_TO_RIGHT && temp_carPosition != CarPosition::OFF_STREET_TO_LEFT){
+        std::cout << "Warning: Steering Dir should only be called when CARPOSITION::OFF_STREET_TO_LEFT or CARPOSITION::OFF_STREET_TO_RIGHT" << std::endl;
+    }
+    return distance_to_street;
+}
+int LaneHandler::get_angle_to_street(){
+    if(temp_carPosition != CarPosition::OFF_STREET_TO_RIGHT && temp_carPosition != CarPosition::OFF_STREET_TO_LEFT){
+        std::cout << "Warning: Steering Dir should only be called when CARPOSITION::OFF_STREET_TO_LEFT or CARPOSITION::OFF_STREET_TO_RIGHT" << std::endl;
+    }
+    return angle_to_street;
+}
+
+
 LineProperties LaneHandler::calculateAverageLinePropertiesOfAverages(const std::vector<LineProperties>& lines) {
     if (lines.size() != 2) {
         // Handle cases where there are not exactly two lines to average
@@ -386,6 +407,8 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
 
     cv::imshow("Average Lines", drawing_image);
 
+    temp_carPosition = carPosition;
+
     return carPosition;
 }
 
@@ -395,7 +418,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/finder_image2.jpeg");
+    cv::Mat image = cv::imread("../images/size6.jpg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == CarPosition::ON_STREET){
