@@ -31,7 +31,7 @@ private:
     bool checkCarOnStreet(const LineProperties& line1, const LineProperties& line2 = LineProperties());
     int calculateSteeringDir(const LineProperties& line1, const LineProperties& line2);
 
-    void drawAverageLine(const LineProperties& line, const std::string& color);
+    void drawLine(const LineProperties& line, const std::string& color);
     cv::Mat drawing_image;
 
     int steering_dir;
