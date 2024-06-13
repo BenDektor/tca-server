@@ -44,10 +44,10 @@ void printLineProperties(const LineProperties& lineProps) {
     std::cout << "End Point: (" << lineProps.endPoint.x << ", " << lineProps.endPoint.y << ")" << std::endl;
 }
 
-void drawAverageLine(cv::Mat& image, const LineProperties& line) {
+void LaneHandler::drawAverageLine(const LineProperties& line) {
     cv::Point pt1(line.startPoint);
     cv::Point pt2(line.endPoint);
-    cv::line(image, pt1, pt2, cv::Scalar(0, 255, 0), 2); // Green color line with thickness 2
+    cv::line(drawing_image, pt1, pt2, cv::Scalar(0, 255, 0), 2); // Green color line with thickness 2
 }
 
 
@@ -68,8 +68,20 @@ bool LaneHandler::checkCarOnStreet(const LineProperties& line1, const LineProper
 
 int LaneHandler::calculateSteeringDir(const LineProperties& line1, const LineProperties& line2){
     LineProperties combinedAvgLine = calculateAverageLineProperties({line1, line2});
+
+    std::cout << "Line 1:" << std::endl;
+    printLineProperties(line1);
     
-    int offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - combinedAvgLine.endPoint.x 
+    std::cout << "Line 2:" << std::endl;
+    printLineProperties(line2);
+    
+    std::cout << "Combined Average Line:" << std::endl;
+printLineProperties(combinedAvgLine);
+
+
+    drawAverageLine(combinedAvgLine);
+    
+    int offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - combinedAvgLine.endPoint.x; 
     return offset_to_middle;
 };
 
@@ -78,6 +90,10 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
     LineProperties avgLineGroup1 = calculateAverageLineProperties(lineGroup1);
     LineProperties avgLineGroup2 = calculateAverageLineProperties(lineGroup2);
 
+
+    // Draw average lines on a copy of the original image
+    drawAverageLine(avgLineGroup1);
+    drawAverageLine(avgLineGroup2);
 
     std::cout << "Average Line Properties for Group 1:" << std::endl;
     printLineProperties(avgLineGroup1);
@@ -128,25 +144,18 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
 
     }
 
-    // Draw average lines on a copy of the original image
-    cv::Mat imageCopy = strassenFinder.houghLinesImage.clone(); // Assuming originalImage is accessible
-    drawAverageLine(imageCopy, avgLineGroup1);
-    drawAverageLine(imageCopy, avgLineGroup2);
-
     // Display or save the image with drawn lines (optional)
-    cv::imshow("Average Lines", imageCopy);
+
 
 }
 
 
 
 
-
-
-
-
 CarPosition LaneHandler::getCarPosition(cv::Mat image) {
     StreetLaneResult result = strassenFinder.find_streetLanes(image);
+
+    drawing_image = strassenFinder.houghLinesImage.clone(); // Assuming originalImage is accessible
 
 
     // Print groups if any were found
@@ -191,7 +200,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
     // cv::Mat edgesImage = strassenFinder.edgesImage;
     cv::imshow("hough", houghImage);
 
-
+    cv::imshow("Average Lines", drawing_image);
 
     return carPosition;
 }

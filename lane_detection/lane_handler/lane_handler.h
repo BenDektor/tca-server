@@ -30,6 +30,8 @@ private:
     bool checkCarOnStreet(const LineProperties& line1, const LineProperties& line2 = LineProperties());
     int calculateSteeringDir(const LineProperties& line1, const LineProperties& line2);
 
+    void drawAverageLine(const LineProperties& line); 
+    cv::Mat drawing_image;
 
     int steering_dir;
     int distance_to_street;
