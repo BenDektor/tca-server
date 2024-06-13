@@ -219,14 +219,16 @@ int LaneHandler::calculateSteeringDir(const LineProperties& line){
     cv::Point pt1;
     if(line.endPoint.y > line.startPoint.y){
         drawOffsetLines(line.startPoint.x);
-
         offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line.startPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
     }
     else{
         drawOffsetLines(line.endPoint.x);
-
         offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line.endPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
     }
+
+    // Draw steering label
+    std::string steering_text = "SteeringDir: " + std::to_string(offset_to_middle) + " px";
+    cv::putText(drawing_image, steering_text, cv::Point(10, 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
     return offset_to_middle;
 }
@@ -254,14 +256,14 @@ std::pair<int, float> LaneHandler::calculateDistanceAndAngleToStreet(const LineP
 
     // Draw offset label
     std::string distance_text = "Distance: " + std::to_string(distanceToStreet);
-    cv::putText(drawing_image, distance_text, cv::Point(10, 60), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(drawing_image, distance_text, cv::Point(10, 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
     // Calculate the angle between the given line and the vertical middle line
     float angleToVertical = 90 - std::atan(std::abs(slope)) * 180.0 / CV_PI;
 
     // Draw angle label
     std::string angle_text = "Angle: " + std::to_string(angleToVertical) + " degrees";
-    cv::putText(drawing_image, angle_text, cv::Point(10, 90), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(drawing_image, angle_text, cv::Point(10, 40), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
     return std::make_pair(distanceToStreet, angleToVertical);
 }
@@ -415,7 +417,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/finder_image3.jpeg");
+    cv::Mat image = cv::imread("../images/size4.jpg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == CarPosition::ON_STREET){
