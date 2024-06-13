@@ -30,11 +30,11 @@ private:
     LineProperties calculateAverageLinePropertiesOfAverages(const std::vector<LineProperties> &lines);
 
     bool checkCarOnStreet(const LineProperties &line1, const LineProperties &line2 = LineProperties());
-    int calculateSteeringDir(const LineProperties &line1, const LineProperties &line2);
     int calculateSteeringDir(const LineProperties &line1);
 
     void drawLine(const LineProperties &line, const std::string &color, int strength = 2);
     void drawOffsetLines(int xValue);
+    void drawVerticalHelperLine();
     cv::Mat drawing_image;
 
     int steering_dir;
