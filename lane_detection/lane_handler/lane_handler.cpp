@@ -228,7 +228,7 @@ int LaneHandler::calculateSteeringDir(const LineProperties& line){
 
     // Draw steering label
     std::string steering_text = "SteeringDir: " + std::to_string(offset_to_middle) + " px";
-    cv::putText(drawing_image, steering_text, cv::Point(10, 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(drawing_image, steering_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
     return offset_to_middle;
 }
@@ -256,14 +256,14 @@ std::pair<int, float> LaneHandler::calculateDistanceAndAngleToStreet(const LineP
 
     // Draw offset label
     std::string distance_text = "Distance: " + std::to_string(distanceToStreet);
-    cv::putText(drawing_image, distance_text, cv::Point(10, 10), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(drawing_image, distance_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
     // Calculate the angle between the given line and the vertical middle line
     float angleToVertical = 90 - std::atan(std::abs(slope)) * 180.0 / CV_PI;
 
     // Draw angle label
     std::string angle_text = "Angle: " + std::to_string(angleToVertical) + " degrees";
-    cv::putText(drawing_image, angle_text, cv::Point(10, 40), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+    cv::putText(drawing_image, angle_text, cv::Point(10, 70), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
 
     return std::make_pair(distanceToStreet, angleToVertical);
 }
