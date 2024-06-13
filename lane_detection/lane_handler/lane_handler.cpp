@@ -30,9 +30,13 @@ LineProperties LaneHandler::calculateAverageLinePropertiesOfAverages(const std::
     float deltaX = midEndPoint.x - midStartPoint.x;
     float avgAngle = std::atan2(deltaY, deltaX); // Angle in radians
 
-    // Calculate x-intercept using the start point and angle
+    // Calculate x-intercept using the point with the higher y-value and angle
     cv::Mat image = strassenFinder.houghLinesImage;
     float avgXIntercept = midStartPoint.x - (midStartPoint.y - image.rows) / std::tan(avgAngle);
+
+    // Adjust midStartPoint to be at the image height
+    midStartPoint.y = image.rows;
+    midStartPoint.x = avgXIntercept;
 
     // Create and return the average LineProperties
     LineProperties avgLineProperties;
@@ -74,19 +78,39 @@ LineProperties LaneHandler::calculateAverageLineProperties(const std::vector<Lin
     float deltaX = avgEndPoint.x - avgStartPoint.x;
     float avgAngle = std::atan2(deltaY, deltaX); // Angle in radians
 
-    // Calculate x-intercept using the start point and angle
+    // Determine which point has the higher and lower y-value
     cv::Mat image = strassenFinder.houghLinesImage;
-    float avgXIntercept = avgStartPoint.x - (avgStartPoint.y - image.rows) / std::tan(avgAngle);
+    cv::Point lowerYPoint, higherYPoint;
+
+    if (avgStartPoint.y < avgEndPoint.y) {
+        lowerYPoint = avgStartPoint;
+        higherYPoint = avgEndPoint;
+    } else {
+        lowerYPoint = avgEndPoint;
+        higherYPoint = avgStartPoint;
+    }
+
+    // Adjust points to fixed y-values
+    lowerYPoint.y = image.rows / 5;
+    lowerYPoint.x = higherYPoint.x - (higherYPoint.y - lowerYPoint.y) / std::tan(avgAngle);
+
+    higherYPoint.y = image.rows;
+    higherYPoint.x = lowerYPoint.x + (image.rows - lowerYPoint.y) / std::tan(avgAngle);
+
+    // Calculate x-intercept using the adjusted points and angle
+    float avgXIntercept = lowerYPoint.x;
 
     // Create and return the average LineProperties
     LineProperties avgLineProperties;
     avgLineProperties.angle = avgAngle; // Use radians for internal calculations
     avgLineProperties.xIntercept = avgXIntercept;
-    avgLineProperties.startPoint = avgStartPoint;
-    avgLineProperties.endPoint = avgEndPoint;
+    avgLineProperties.startPoint = lowerYPoint;
+    avgLineProperties.endPoint = higherYPoint;
 
     return avgLineProperties;
 }
+
+
 
 
 void printLineProperties(const LineProperties& lineProps) {
@@ -174,7 +198,6 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
     {
         //Two right lanes detected (from bottom right to top left)
         std::cout << "Two right lanes" << std::endl;
-        std::cout << "Two left lanes" << std::endl;
         bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
         if(onStreet){
             steering_dir = calculateSteeringDir(avgLineGroup1, avgLineGroup2);
@@ -264,7 +287,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/size2.jpg");
+    cv::Mat image = cv::imread("../images/finder_image3.jpeg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == 1){
