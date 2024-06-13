@@ -131,14 +131,17 @@ void LaneHandler::drawLine(const LineProperties& line, const std::string& color,
         lineColor = cv::Scalar(0, 0, 255); // Red color
     } else if (color == "green") {
         lineColor = cv::Scalar(0, 255, 0); // Green color
+    } else if (color == "yellow") {
+        lineColor = cv::Scalar(0, 255, 255); // Yellow color
     } else {
         // Default to green if color string is unrecognized
         lineColor = cv::Scalar(0, 255, 0); // Green color
     }
 
     // Draw the line
-    cv::line(drawing_image, pt1, pt2, lineColor, strength); // Draw line with specified color and thickness 2
+    cv::line(drawing_image, pt1, pt2, lineColor, strength); // Draw line with specified color and thickness
 }
+
 
 void LaneHandler::drawOffsetLines(int xValue) {
     cv::Point pt1(xValue, drawing_image.rows / 5);
@@ -177,25 +180,54 @@ bool LaneHandler::checkCarOnStreet(const LineProperties& line1, const LineProper
 
 
 
-int LaneHandler::calculateSteeringDir(const LineProperties& line1){
-    drawLine(line1, "blue");
+int LaneHandler::calculateSteeringDir(const LineProperties& line){
+    
+    drawVerticalHelperLine();
 
     int offset_to_middle;
 
     // Draw offset line (steering line)
     cv::Point pt1;
-    if(line1.endPoint.y > line1.startPoint.y){
-        drawOffsetLines(line1.startPoint.x);
+    if(line.endPoint.y > line.startPoint.y){
+        drawOffsetLines(line.startPoint.x);
 
-        offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line1.startPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
+        offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line.startPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
     }
     else{
-        drawOffsetLines(line1.endPoint.x);
+        drawOffsetLines(line.endPoint.x);
 
-        offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line1.endPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
+        offset_to_middle = (strassenFinder.houghLinesImage.cols / 2) - line.endPoint.x;  //if positive value the average lane is to the left -> so steering to left is needed; else negative, average lane is to the right
     }
 
     return offset_to_middle;
+}
+
+int LaneHandler::calculateDistanceAndAngleToStreet(const LineProperties &line) {
+    printLineProperties(line);
+
+    // Get the middle x-coordinate of the image
+    int middleX = strassenFinder.houghLinesImage.cols / 2;
+
+    // Calculate the slope (m) and intercept (b) of the given line
+    float slope = std::tan(line.angle);
+    float intercept = line.startPoint.y - slope * line.startPoint.x;
+
+    // Calculate the intersection point (x, y) with the vertical middle line
+    int intersectionY = slope * middleX + intercept;
+
+    // Draw the middle line from the bottom of the image up to the intersection point
+    cv::Point pt1(middleX, strassenFinder.houghLinesImage.rows);
+    cv::Point pt2(middleX, intersectionY);
+    drawLine(LineProperties{0.0f, 0.0f, pt1, pt2}, "yellow");
+
+    // Calculate the distance from the bottom of the image to the intersection point
+    int distanceToStreet = strassenFinder.houghLinesImage.rows - intersectionY;
+
+    // Draw offset label
+    std::string distance_text = "Distance: " + std::to_string(distanceToStreet);
+    cv::putText(drawing_image, distance_text, cv::Point(10, 60), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+
+    return distanceToStreet;
 }
 
 
@@ -207,10 +239,11 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
 
     LineProperties combinedAvgLine = calculateAverageLinePropertiesOfAverages({avgLineGroup1, avgLineGroup2});
 
-    
     // Draw average lines on a copy of the original image
     drawLine(avgLineGroup1, "green");
     drawLine(avgLineGroup2, "green");
+
+    drawLine(combinedAvgLine, "blue");
 
 
     std::cout << "Average Line Properties for Group 1:" << std::endl;
@@ -227,7 +260,6 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
         if(onStreet){
 
-            drawVerticalHelperLine();
 
             steering_dir = calculateSteeringDir(combinedAvgLine);
             std::cout << "Steering direction: " << steering_dir << std::endl;
@@ -247,14 +279,13 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
         bool onStreet = checkCarOnStreet(avgLineGroup1, avgLineGroup2);
         if(onStreet){
 
-            drawVerticalHelperLine();
 
             steering_dir = calculateSteeringDir(combinedAvgLine);
             std::cout << "Steering direction: " << steering_dir << std::endl;
             return CarPosition::ON_STREET;
         }
         else{
-            //distance_to_street = calculateDistanceToStreet(avgLineGroup1, avgLineGroup2);
+            distance_to_street = calculateDistanceAndAngleToStreet(combinedAvgLine);
             //angle_to_street = calculateAngleToStreet(avgLineGroup1, avgLineGroup2);
             return CarPosition::OFF_STREET_TO_RIGHT;
         }
@@ -264,7 +295,6 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
     {
         //group1 left lane, group2 right lane
         std::cout << "One left one right" << std::endl;
-        drawVerticalHelperLine();
         
         steering_dir = calculateSteeringDir(combinedAvgLine);
         std::cout << "Steering direction: " << steering_dir << std::endl;
@@ -274,7 +304,6 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
 }
 
 
-
 CarPosition LaneHandler::handleOneLane(const std::vector<LineProperties>& lineGroup){
     LineProperties avgLine = calculateAverageLineProperties(lineGroup);
     
@@ -282,7 +311,6 @@ CarPosition LaneHandler::handleOneLane(const std::vector<LineProperties>& lineGr
 
     bool onStreet = checkCarOnStreet(avgLine);
     if(onStreet){
-        drawVerticalHelperLine();
 
         steering_dir = calculateSteeringDir(avgLine);
         std::cout << "One left lane" << std::endl;
@@ -356,7 +384,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/size21.jpg");
+    cv::Mat image = cv::imread("../images/finder_image3.jpeg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == 1){
