@@ -46,24 +46,42 @@ int main() {
             int distance_to_street = laneHandler.get_distance_to_street();
             int angle_to_street = laneHandler.get_angle_to_street();
 
-            if(distance_to_street < 300){
-                
+            if(distance_to_street < 300){ //nah an der strase
+                if(angle_to_street > 70) {// angle can be from 0-90
+                    stream_command << -4; // nach rechts lenken, um sich der Spur anzupassen
+                }
+
+            }
+            else { // weiter weg von der strase
+                stream_command << 2; //leicht nach links lenken, um schneller zur Strase zu kommen
             }
 
-            if()
         }   
         else if (carPosition == CarPosition::OFF_STREET_TO_RIGHT){
             std::cout << "Car Position Result: " << "OffStreet Street to the right" << std::endl;
             std::cout << "Distance to Street: " << laneHandler.get_distance_to_street() << std::endl;
             std::cout << "Angle to Street: " << laneHandler.get_angle_to_street() << std::endl;
+
+            int distance_to_street = laneHandler.get_distance_to_street();
+            int angle_to_street = laneHandler.get_angle_to_street();
+
+            if(distance_to_street < 300){ //nah an der strase
+                if(angle_to_street > 70) {// angle can be from 0-90
+                    stream_command << 4; // nach links lenken, um sich der Spur anzupassen
+                }
+
+            }
+            else { // weiter weg von der strase
+                stream_command << -2; //leicht nach rechts lenken, um schneller zur Strase zu kommen
+            }
         }
         else if (carPosition == CarPosition::NO_STREET){
             std::cout << "Car Position Result: " << "NoStreet" << std::endl;
+            stream_command << "Error";
         }
         else {
             std::cout << "Unknwon Car Position" << std::endl;
             stream_command << "Error";
-            cv::imshow("error_image", frame);
         }
 
         
