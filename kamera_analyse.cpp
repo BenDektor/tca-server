@@ -1,7 +1,11 @@
 #include "kamera_analyse.h"
 
 int mapValue(double input, double input_start, double input_end, double output_start, double output_end) {
-        return static_cast<int>(output_start + ((output_end - output_start) / (input_end - input_start)) * (input - input_start));
+        double limited_input;
+        if(input > input_end) limited_input = input_end;
+        else if(input < input_start) limited_input = input_start;
+        
+        return static_cast<int>(output_start + ((output_end - output_start) / (input_end - input_start)) * (limited_input - input_start));
 }
 
 
@@ -9,7 +13,7 @@ int main() {
     // Initialize the socket with the server's IP address
     Socket socket("172.16.8.137");
 
-    StrassenErkennung strassenErkennung;
+    LaneHandler laneHandler;
     PID pid_controller(2, 0.1, 0.2);
 
     // Continuously receive and display frames
@@ -23,49 +27,51 @@ int main() {
             break;
         }
 
-        bool success;
-        int steering_dir;
-        success = strassenErkennung.get_steering_dir(frame, steering_dir, true);
+        CarPosition carPosition = laneHandler.getCarPosition(frame);
 
-        if(success){
-            std::cout << "Steering Direction: " << steering_dir << std::endl;
+        std::stringstream stream_command;
 
-            //cv::Mat edges = strassenErkennung.get_edgesImage();
-            //cv::Mat mask = strassenErkennung.get_mask();
-            //cv::Mat maskedImage = strassenErkennung.get_maskedImage();
-            //cv::Mat houghImage = strassenErkennung.get_houghLinesImage();
-            cv::Mat laneLineImage = strassenErkennung.get_laneLineImage();
-            //cv::Mat filteredHoughLinesImage = strassenErkennung.get_filteredHoughLinesImage();
-
-            //cv::imshow("mask", mask);
-            //cv::imshow("edges image", edges);
-            //cv::imshow("filteredHoughLineImage", filteredHoughLinesImage);
-            //cv::imshow("hough", houghImage);
-            cv::imshow("laneLineImage", laneLineImage);   
-
-
-            if(steering_dir > 320) steering_dir = 320;
-            if(steering_dir < -320) steering_dir = -320;
-            //Convert steering dir to lenk command
-            //double pid_output = pid_controller.calculate(0, steering_dir);
-            //int lenk_command = mapValue(pid_output, -640.0, 640.0, -6.0, 6.0);
-
+        if(carPosition == CarPosition::ON_STREET){
+            std::cout << "Car Position Result: " << "OnStreet" << std::endl;
+            std::cout << "Steering Direction: " << laneHandler.get_steering_dir() << std::endl;
+            int steering_dir = laneHandler.get_steering_dir();
             int lenk_command = mapValue(steering_dir, -320.0, 320.0, -6.0, 6.0);
-            // Convert lenkcommand to string
-            std::stringstream ss;
-            //ss << lenk_command;
-            ss << lenk_command;
-            std::string message = ss.str();
-            std::cout << "this is my messge: " << message.c_str() << std::endl;
+            stream_command << lenk_command;
+        }
+        else if (carPosition == CarPosition::OFF_STREET_TO_LEFT){
+            std::cout << "Car Position Result: " << "OffStreet Street to the left" << std::endl;
+            std::cout << "Distance to Street: " << laneHandler.get_distance_to_street() << std::endl;
+            std::cout << "Angle to Street: " << laneHandler.get_angle_to_street() << std::endl;
 
-            // Send message to client
-            socket.sendMessage(message.c_str());
+            int distance_to_street = laneHandler.get_distance_to_street();
+            int angle_to_street = laneHandler.get_angle_to_street();
+
+            if(distance_to_street < 300){
+                
+            }
+
+            if()
+        }   
+        else if (carPosition == CarPosition::OFF_STREET_TO_RIGHT){
+            std::cout << "Car Position Result: " << "OffStreet Street to the right" << std::endl;
+            std::cout << "Distance to Street: " << laneHandler.get_distance_to_street() << std::endl;
+            std::cout << "Angle to Street: " << laneHandler.get_angle_to_street() << std::endl;
         }
-        else
-        {
-            cv::imshow("laneLineImage", frame);
-            socket.sendMessage("Error");
+        else if (carPosition == CarPosition::NO_STREET){
+            std::cout << "Car Position Result: " << "NoStreet" << std::endl;
         }
+        else {
+            std::cout << "Unknwon Car Position" << std::endl;
+            stream_command << "Error";
+            cv::imshow("error_image", frame);
+        }
+
+        
+        std::string message = stream_command.str();
+        std::cout << "this is my message to raspi: " << message.c_str() << std::endl;
+        // Send message to client
+        socket.sendMessage(message.c_str());
+
         cv::waitKey(1);
     }
 
