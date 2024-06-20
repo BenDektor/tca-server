@@ -58,6 +58,9 @@ int main() {
                 if(angle_to_street > 70) {// angle can be from 0-90
                     stream_command << -4; // nach rechts lenken, um sich der Spur anzupassen
                 }
+                else{
+                    stream_command << -1;
+                }
 
             }
             else { // weiter weg von der strase
@@ -76,6 +79,9 @@ int main() {
             if(distance_to_street < 300){ //nah an der strase
                 if(angle_to_street > 70) {// angle can be from 0-90
                     stream_command << 4; // nach links lenken, um sich der Spur anzupassen
+                }
+                else{
+                    stream_command << 1;
                 }
 
             }
