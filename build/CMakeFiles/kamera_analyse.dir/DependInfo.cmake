@@ -10,7 +10,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/kamera_analyse.cpp" "CMakeFiles/kamera_analyse.dir/kamera_analyse.cpp.o" "gcc" "CMakeFiles/kamera_analyse.dir/kamera_analyse.cpp.o.d"
   "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/image_preprocessing/ImagePreProcessing.cpp" "CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o" "gcc" "CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o.d"
-  "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/laneDetection.cpp" "CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o" "gcc" "CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o.d"
+  "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp" "CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o" "gcc" "CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o.d"
+  "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_handler/lane_handler.cpp" "CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o" "gcc" "CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o.d"
   "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/pid_controller.cpp" "CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o" "gcc" "CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o.d"
   "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/socket_test/pc_socket.cpp" "CMakeFiles/kamera_analyse.dir/socket_test/pc_socket.cpp.o" "gcc" "CMakeFiles/kamera_analyse.dir/socket_test/pc_socket.cpp.o.d"
   )

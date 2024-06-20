@@ -177,29 +177,53 @@ lane_detection/image_preprocessing/ImagePreProcessing.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.s
 .PHONY : lane_detection/image_preprocessing/ImagePreProcessing.cpp.s
 
-lane_detection/laneDetection.o: lane_detection/laneDetection.cpp.o
-.PHONY : lane_detection/laneDetection.o
+lane_detection/lane_finder/Strasenfinder2.o: lane_detection/lane_finder/Strasenfinder2.cpp.o
+.PHONY : lane_detection/lane_finder/Strasenfinder2.o
 
 # target to build an object file
-lane_detection/laneDetection.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o
-.PHONY : lane_detection/laneDetection.cpp.o
+lane_detection/lane_finder/Strasenfinder2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o
+.PHONY : lane_detection/lane_finder/Strasenfinder2.cpp.o
 
-lane_detection/laneDetection.i: lane_detection/laneDetection.cpp.i
-.PHONY : lane_detection/laneDetection.i
+lane_detection/lane_finder/Strasenfinder2.i: lane_detection/lane_finder/Strasenfinder2.cpp.i
+.PHONY : lane_detection/lane_finder/Strasenfinder2.i
 
 # target to preprocess a source file
-lane_detection/laneDetection.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.i
-.PHONY : lane_detection/laneDetection.cpp.i
+lane_detection/lane_finder/Strasenfinder2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.i
+.PHONY : lane_detection/lane_finder/Strasenfinder2.cpp.i
 
-lane_detection/laneDetection.s: lane_detection/laneDetection.cpp.s
-.PHONY : lane_detection/laneDetection.s
+lane_detection/lane_finder/Strasenfinder2.s: lane_detection/lane_finder/Strasenfinder2.cpp.s
+.PHONY : lane_detection/lane_finder/Strasenfinder2.s
 
 # target to generate assembly for a file
-lane_detection/laneDetection.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.s
-.PHONY : lane_detection/laneDetection.cpp.s
+lane_detection/lane_finder/Strasenfinder2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.s
+.PHONY : lane_detection/lane_finder/Strasenfinder2.cpp.s
+
+lane_detection/lane_handler/lane_handler.o: lane_detection/lane_handler/lane_handler.cpp.o
+.PHONY : lane_detection/lane_handler/lane_handler.o
+
+# target to build an object file
+lane_detection/lane_handler/lane_handler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o
+.PHONY : lane_detection/lane_handler/lane_handler.cpp.o
+
+lane_detection/lane_handler/lane_handler.i: lane_detection/lane_handler/lane_handler.cpp.i
+.PHONY : lane_detection/lane_handler/lane_handler.i
+
+# target to preprocess a source file
+lane_detection/lane_handler/lane_handler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.i
+.PHONY : lane_detection/lane_handler/lane_handler.cpp.i
+
+lane_detection/lane_handler/lane_handler.s: lane_detection/lane_handler/lane_handler.cpp.s
+.PHONY : lane_detection/lane_handler/lane_handler.s
+
+# target to generate assembly for a file
+lane_detection/lane_handler/lane_handler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kamera_analyse.dir/build.make CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.s
+.PHONY : lane_detection/lane_handler/lane_handler.cpp.s
 
 pid_controller.o: pid_controller.cpp.o
 .PHONY : pid_controller.o
@@ -264,9 +288,12 @@ help:
 	@echo "... lane_detection/image_preprocessing/ImagePreProcessing.o"
 	@echo "... lane_detection/image_preprocessing/ImagePreProcessing.i"
 	@echo "... lane_detection/image_preprocessing/ImagePreProcessing.s"
-	@echo "... lane_detection/laneDetection.o"
-	@echo "... lane_detection/laneDetection.i"
-	@echo "... lane_detection/laneDetection.s"
+	@echo "... lane_detection/lane_finder/Strasenfinder2.o"
+	@echo "... lane_detection/lane_finder/Strasenfinder2.i"
+	@echo "... lane_detection/lane_finder/Strasenfinder2.s"
+	@echo "... lane_detection/lane_handler/lane_handler.o"
+	@echo "... lane_detection/lane_handler/lane_handler.i"
+	@echo "... lane_detection/lane_handler/lane_handler.s"
 	@echo "... pid_controller.o"
 	@echo "... pid_controller.i"
 	@echo "... pid_controller.s"

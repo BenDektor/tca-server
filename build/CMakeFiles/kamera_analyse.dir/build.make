@@ -97,24 +97,38 @@ CMakeFiles/kamera_analyse.dir/socket_test/pc_socket.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/kamera_analyse.dir/socket_test/pc_socket.cpp.s"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/socket_test/pc_socket.cpp" -o CMakeFiles/kamera_analyse.dir/socket_test/pc_socket.cpp.s
 
-CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o: CMakeFiles/kamera_analyse.dir/flags.make
-CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/lane_detection/laneDetection.cpp
-CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o: CMakeFiles/kamera_analyse.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o -MF CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o.d -o CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o -c "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/laneDetection.cpp"
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o: CMakeFiles/kamera_analyse.dir/flags.make
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/lane_detection/lane_handler/lane_handler.cpp
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o: CMakeFiles/kamera_analyse.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o -MF CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o.d -o CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o -c "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_handler/lane_handler.cpp"
 
-CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/laneDetection.cpp" > CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.i
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_handler/lane_handler.cpp" > CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.i
 
-CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/laneDetection.cpp" -o CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.s
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_handler/lane_handler.cpp" -o CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.s
+
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o: CMakeFiles/kamera_analyse.dir/flags.make
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o: CMakeFiles/kamera_analyse.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o -MF CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o.d -o CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o -c "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp"
+
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp" > CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.i
+
+CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/lane_finder/Strasenfinder2.cpp" -o CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.s
 
 CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o: CMakeFiles/kamera_analyse.dir/flags.make
 CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/lane_detection/image_preprocessing/ImagePreProcessing.cpp
 CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o: CMakeFiles/kamera_analyse.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o -MF CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o.d -o CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o -c "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/lane_detection/image_preprocessing/ImagePreProcessing.cpp"
 
 CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.i: cmake_force
@@ -128,7 +142,7 @@ CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcess
 CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o: CMakeFiles/kamera_analyse.dir/flags.make
 CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o: /Users/benedikt/Studium/6\ Semester/DT\ -\ Datenverarbeitung\ in\ der\ Technik/local-code/pid_controller.cpp
 CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o: CMakeFiles/kamera_analyse.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o -MF CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o.d -o CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o -c "/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/pid_controller.cpp"
 
 CMakeFiles/kamera_analyse.dir/pid_controller.cpp.i: cmake_force
@@ -143,7 +157,8 @@ CMakeFiles/kamera_analyse.dir/pid_controller.cpp.s: cmake_force
 kamera_analyse_OBJECTS = \
 "CMakeFiles/kamera_analyse.dir/kamera_analyse.cpp.o" \
 "CMakeFiles/kamera_analyse.dir/socket_test/pc_socket.cpp.o" \
-"CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o" \
+"CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o" \
+"CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o" \
 "CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o" \
 "CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o"
 
@@ -152,7 +167,8 @@ kamera_analyse_EXTERNAL_OBJECTS =
 
 kamera_analyse: CMakeFiles/kamera_analyse.dir/kamera_analyse.cpp.o
 kamera_analyse: CMakeFiles/kamera_analyse.dir/socket_test/pc_socket.cpp.o
-kamera_analyse: CMakeFiles/kamera_analyse.dir/lane_detection/laneDetection.cpp.o
+kamera_analyse: CMakeFiles/kamera_analyse.dir/lane_detection/lane_handler/lane_handler.cpp.o
+kamera_analyse: CMakeFiles/kamera_analyse.dir/lane_detection/lane_finder/Strasenfinder2.cpp.o
 kamera_analyse: CMakeFiles/kamera_analyse.dir/lane_detection/image_preprocessing/ImagePreProcessing.cpp.o
 kamera_analyse: CMakeFiles/kamera_analyse.dir/pid_controller.cpp.o
 kamera_analyse: CMakeFiles/kamera_analyse.dir/build.make
@@ -212,7 +228,7 @@ kamera_analyse: /usr/local/lib/libopencv_photo.4.9.0.dylib
 kamera_analyse: /usr/local/lib/libopencv_imgproc.4.9.0.dylib
 kamera_analyse: /usr/local/lib/libopencv_core.4.9.0.dylib
 kamera_analyse: CMakeFiles/kamera_analyse.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable kamera_analyse"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/benedikt/Studium/6 Semester/DT - Datenverarbeitung in der Technik/local-code/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable kamera_analyse"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kamera_analyse.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -441,7 +441,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
 
 
 
-int main () {
+/*int main () {
     LaneHandler laneHandler;
 
 
@@ -469,7 +469,7 @@ int main () {
         std::cout << "Unknwon Car Position" << std::endl;
     }
     cv::waitKey(0);
-}
+}*/
 
 
 

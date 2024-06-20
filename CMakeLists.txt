@@ -11,7 +11,8 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(kamera_analyse 
             kamera_analyse.h kamera_analyse.cpp 
             socket_test/pc_socket.cpp socket_test/pc_socket.h 
-            lane_detection/laneDetection.cpp lane_detection/laneDetection.h 
+            lane_detection/lane_handler/lane_handler.cpp lane_detection/lane_handler/lane_handler.h
+            lane_detection/lane_finder/Strasenfinder2.cpp lane_detection/lane_finder/Strasenfinder2.h
             lane_detection/image_preprocessing/ImagePreProcessing.cpp lane_detection/image_preprocessing/ImagePreProcessing.h
             pid_controller.cpp pid_controller.h)
 target_link_libraries(kamera_analyse ${OpenCV_LIBS})
