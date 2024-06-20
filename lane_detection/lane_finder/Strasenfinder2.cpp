@@ -106,8 +106,10 @@ std::vector<std::vector<LineProperties>> StrasenFinder2::groupLines(const std::v
     return groups;
 }
 
+
 std::vector<std::vector<LineProperties>> StrasenFinder2::groupLines2(const std::vector<LineProperties>& lines) {
     std::vector<std::vector<LineProperties>> bestGroups;
+    std::vector<std::vector<LineProperties>> lastGroups; // To keep track of the last valid groups
     float minNumClusters = std::numeric_limits<float>::max();
 
     // Set up random engine and shuffle the lines
@@ -148,11 +150,18 @@ std::vector<std::vector<LineProperties>> StrasenFinder2::groupLines2(const std::
             }
         }
 
+        lastGroups = groups; // Update lastGroups to the current groups
+
         // Check the number of clusters formed
         if (groups.size() > 1 && groups.size() < minNumClusters) {
             bestGroups = groups;
             minNumClusters = groups.size();
         }
+    }
+
+    // If no group with more than one cluster was found, use the last groups formed
+    if (bestGroups.empty()) {
+        bestGroups = lastGroups;
     }
 
     // Print out the best generated groups
@@ -162,8 +171,10 @@ std::vector<std::vector<LineProperties>> StrasenFinder2::groupLines2(const std::
             std::cout << "Angle: " << line.angle << ", X Intercept: " << line.xIntercept << std::endl;
         }
     }
+
     return bestGroups;
 }
+
 
 
 
