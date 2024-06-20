@@ -52,7 +52,7 @@ bool Socket::setupConnection(const std::string& ip_address) {
 
 bool Socket::sendMessage(const char* message) {
     // Send response message
-    std::cout << "sendign this message to phil: " << message << std::endl;
+    std::cout << "Socket: sendign this message to raspi: " << message << std::endl;
 
     if (send(clientSocket, message, strlen(message), 0) < 0) {
         return false;

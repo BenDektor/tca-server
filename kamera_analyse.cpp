@@ -1,12 +1,19 @@
 #include "kamera_analyse.h"
 
 int mapValue(double input, double input_start, double input_end, double output_start, double output_end) {
-        double limited_input;
-        if(input > input_end) limited_input = input_end;
-        else if(input < input_start) limited_input = input_start;
-        
-        return static_cast<int>(output_start + ((output_end - output_start) / (input_end - input_start)) * (limited_input - input_start));
+    double limited_input;
+    if(input > input_end) {
+        limited_input = input_end;
+    } else if(input < input_start) {
+        limited_input = input_start;
+    } else {
+        limited_input = input;
+    }
+    
+    double mapped_value = output_start + ((output_end - output_start) / (input_end - input_start)) * (limited_input - input_start);
+    return static_cast<int>(mapped_value);
 }
+
 
 
 int main() {
@@ -36,6 +43,7 @@ int main() {
             std::cout << "Steering Direction: " << laneHandler.get_steering_dir() << std::endl;
             int steering_dir = laneHandler.get_steering_dir();
             int lenk_command = mapValue(steering_dir, -320.0, 320.0, -6.0, 6.0);
+            std::cout << "Mapped Command: " << lenk_command << std::endl;
             stream_command << lenk_command;
         }
         else if (carPosition == CarPosition::OFF_STREET_TO_LEFT){
