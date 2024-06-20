@@ -54,7 +54,7 @@ int main() {
             int distance_to_street = laneHandler.get_distance_to_street();
             int angle_to_street = laneHandler.get_angle_to_street();
 
-            if(distance_to_street < 300){ //nah an der strase
+            if(distance_to_street < 410){ //nah an der strase
                 if(angle_to_street > 70) {// angle can be from 0-90
                     stream_command << -4; // nach rechts lenken, um sich der Spur anzupassen
                 }
@@ -76,7 +76,7 @@ int main() {
             int distance_to_street = laneHandler.get_distance_to_street();
             int angle_to_street = laneHandler.get_angle_to_street();
 
-            if(distance_to_street < 300){ //nah an der strase
+            if(distance_to_street < 410){ //nah an der strase
                 if(angle_to_street > 70) {// angle can be from 0-90
                     stream_command << 4; // nach links lenken, um sich der Spur anzupassen
                 }
