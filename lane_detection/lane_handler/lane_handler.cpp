@@ -364,7 +364,7 @@ CarPosition LaneHandler::handleTwoLanes(const std::vector<LineProperties>& lineG
 CarPosition LaneHandler::handleOneLane(const std::vector<LineProperties>& lineGroup){
     LineProperties avgLine = calculateAverageLineProperties(lineGroup);
     
-    printLineProperties(avgLine);
+    //printLineProperties(avgLine);
 
     bool onStreet = checkCarOnStreet(avgLine);
     if(onStreet){
@@ -415,6 +415,7 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
         case StreetLaneStatus::NO_LANE:
             std::cout << "No street lanes detected." << std::endl;
             carPosition = CarPosition::NO_STREET;
+            break;
         case StreetLaneStatus::ONE_LANE:
             std::cout << "One street lane detected" << std::endl;
             carPosition = handleOneLane(result.groups[0]);
