@@ -20,6 +20,7 @@ public:
     int get_steering_dir();
     int get_distance_to_street();
     int get_angle_to_street();
+    cv::Mat getModifiedImage();
 
 private:
     StrasenFinder2 strassenFinder;

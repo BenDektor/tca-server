@@ -20,6 +20,9 @@ int LaneHandler::get_angle_to_street(){
     }
     return angle_to_street;
 }
+cv::Mat LaneHandler::getModifiedImage(){
+    return drawing_image;
+}
 
 
 LineProperties LaneHandler::calculateAverageLinePropertiesOfAverages(const std::vector<LineProperties>& lines) {
@@ -428,12 +431,12 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
 
     // Optionally, you can retrieve and display processed images if needed
     // cv::Mat blurredImage = strassenFinder.blurredImage;
-    cv::Mat houghImage = strassenFinder.houghLinesImage;
+    //cv::Mat houghImage = strassenFinder.houghLinesImage;
     // cv::Mat edgesImage = strassenFinder.edgesImage;
-    cv::imshow("hough", houghImage);
+    // cv::imshow("hough", houghImage);
 
     drawCarPositionText(carPosition);
-    cv::imshow("Average Lines", drawing_image);
+    //cv::imshow("Average Lines", drawing_image);
 
     temp_carPosition = carPosition;
 
