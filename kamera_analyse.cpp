@@ -107,14 +107,8 @@ int main()
         std::string message = stream_command.str();
         std::cout << "this is my message to raspi: " << message.c_str() << std::endl;
         // Send message to client
-        if (carPosition == CarPosition::NO_STREET || carPosition == CarPosition::UNKNOWN){
-            cv::destroyWindow("modified image");
-            cv::imshow("original image", frame);
-        }
-        else{
-            cv::destroyWindow("original image");
-            cv::imshow("modified image", laneHandler.getModifiedImage());
-        }
+
+        cv::imshow("modified image", laneHandler.getModifiedImage());
 
         socket.sendMessage(message.c_str());
 

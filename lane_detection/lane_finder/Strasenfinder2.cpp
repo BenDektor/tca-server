@@ -26,10 +26,10 @@ bool StrasenFinder2::houghLinesAlgo(cv::Mat maskedImage, cv::Mat inputImage, std
     int maxLineGap = 70;
     cv::HoughLinesP(maskedImage, lines, rho, theta, threshold, minLineLength, maxLineGap);
     std::cout << "HoughLines Total: " << lines.size() << std::endl;
-    
+
+    houghLinesImage = inputImage.clone();
     // Check if we got more than one line
     if (!lines.empty()) {
-        houghLinesImage = inputImage.clone();
         // Loop through lines
         for (size_t i = 0; i != lines.size(); ++i) {
 
