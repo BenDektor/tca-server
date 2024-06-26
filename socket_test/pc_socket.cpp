@@ -107,6 +107,7 @@ void Socket::receiveRaspiData() {
         }
 
         buffer[bytesRead] = '\0';
+        std::cout << "Raw buffer data received: " << buffer << std::endl; // Print the raw buffer data
         messageBuffer += std::string(buffer);
 
         size_t pos;
