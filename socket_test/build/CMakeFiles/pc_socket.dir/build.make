@@ -127,6 +127,7 @@ pc_socket: /usr/local/lib/libopencv_wechat_qrcode.4.9.0.dylib
 pc_socket: /usr/local/lib/libopencv_xfeatures2d.4.9.0.dylib
 pc_socket: /usr/local/lib/libopencv_xobjdetect.4.9.0.dylib
 pc_socket: /usr/local/lib/libopencv_xphoto.4.9.0.dylib
+pc_socket: /usr/local/lib/libboost_system-mt.dylib
 pc_socket: /usr/local/lib/libopencv_shape.4.9.0.dylib
 pc_socket: /usr/local/lib/libopencv_highgui.4.9.0.dylib
 pc_socket: /usr/local/lib/libopencv_datasets.4.9.0.dylib

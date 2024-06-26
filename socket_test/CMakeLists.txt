@@ -6,7 +6,13 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+
+# Find Boost
+find_package(Boost REQUIRED COMPONENTS system)
+# Include Boost headers
+include_directories(${Boost_INCLUDE_DIRS})
+
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(pc_socket pc_socket.h pc_socket.cpp)
-target_link_libraries(pc_socket ${OpenCV_LIBS})
+target_link_libraries(pc_socket ${OpenCV_LIBS}  ${Boost_LIBRARIES})
