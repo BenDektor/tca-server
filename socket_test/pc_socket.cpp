@@ -108,6 +108,9 @@ void Socket::receiveRaspiData() {
         std::cerr << "Error receiving message. Error code " << errno << ": " << strerror(errno) << std::endl;
         return;
     }
+    else{
+        std::cout << "received some data: " << bytesRead << std::endl;
+    }
 
     // Ensure null-terminated string
     buffer[bytesRead] = '\0';
