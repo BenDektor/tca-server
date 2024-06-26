@@ -13,11 +13,6 @@
 #include <sstream>
 #include "json_lib/json.hpp"
 
-struct Message {
-    int header;
-    std::string data;
-};
-
 struct SensorData {
     int Compass;
     double DistanceLeft;
@@ -38,9 +33,7 @@ public:
     bool receiveMessage(char* buffer, int bufferSize);
     void closeConnection();
     bool sendTestMessage();
-    cv::Mat receiveFrame();
-    SensorData receiveJsonData();
-    void receiveMessage();
+    void receiveRaspiData();
 
 private:
     int clientSocket;
@@ -48,8 +41,8 @@ private:
 
     bool isJson(const std::string& str);
     SensorData parseJsonData(const std::string& jsonData);
+    std::vector<uchar> base64_decode(const std::string &base64str);
 
-    
     void handleSensorData(std::istringstream& iss);
     void handleImageData(std::istringstream& iss);
 };

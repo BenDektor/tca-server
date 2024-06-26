@@ -1,6 +1,6 @@
 #include "pc_socket.h"
 
-std::vector<uchar> base64_decode(const std::string &base64str) {
+std::vector<uchar> Socket::base64_decode(const std::string &base64str) {
     std::string decoded;
     cv::Mat data = cv::Mat(1, base64str.length(), CV_8UC1, const_cast<char*>(base64str.c_str()));
     cv::Mat binaryData = cv::imdecode(data, cv::IMREAD_COLOR);
@@ -80,65 +80,6 @@ bool Socket::sendTestMessage() {
     return sendMessage(responseMessage);
 }
 
-cv::Mat Socket::receiveFrame() {
-    // Receive frame size
-    int frameSize = 0;
-    if (recv(clientSocket, &frameSize, sizeof(frameSize), 0) < 0) {
-        std::cerr << "Error: Failed to receive frame size\n";
-        closeConnection();
-        exit(1);
-    }
-
-    // Allocate buffer for frame data based on received size
-    std::vector<char> framebuffer(frameSize);
-
-    // Receive the actual frame data
-    int framebytesReceived = recv(clientSocket, framebuffer.data(), frameSize, MSG_WAITALL);
-    if (framebytesReceived < 0) {
-        std::cerr << "Error: Unable to receive frame data\n";
-        closeConnection();
-        exit(1);
-    }
-
-    // Decode the frame using OpenCV
-    cv::Mat frame = cv::imdecode(cv::Mat(framebuffer), cv::IMREAD_COLOR);
-
-    // Check if frame decoding was successful
-    if (frame.empty()) {
-        std::cerr << "Error: Failed to decode frame\n";
-        closeConnection();
-        exit(1);
-    }
-
-    return frame;
-}
-
-SensorData Socket::receiveJsonData() {
-    char buffer[4096];
-    SensorData sensorData;
-    sensorData.Compass = -1; // Default value to indicate failure
-
-    int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
-    if (bytesRead <= 0) {
-        std::cerr << "Connection closed by server or error occurred\n";
-        return sensorData;
-    }
-
-    std::string receivedData(buffer, bytesRead);
-    size_t jsonStartIndex = receivedData.find('{');
-    if (jsonStartIndex != std::string::npos) {
-        receivedData = receivedData.substr(jsonStartIndex);
-    }
-
-    if (isJson(receivedData)) {
-        sensorData = parseJsonData(receivedData);
-    } else {
-        std::cout << "Received non-JSON message: " << receivedData << std::endl;
-    }
-
-    return sensorData;
-}
-
 bool Socket::isJson(const std::string& str) {
     return !str.empty() && (str.front() == '{' || str.front() == '[') && (str.back() == '}' || str.back() == ']');
 }
@@ -160,7 +101,7 @@ SensorData Socket::parseJsonData(const std::string& jsonData) {
     return sensorData;
 }
 
-void Socket::receiveMessage() {
+void Socket::receiveRaspiData() {
     char buffer[1024];  // Adjust buffer size as needed
     int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
     if (bytesRead == -1) {
@@ -176,6 +117,8 @@ void Socket::receiveMessage() {
     std::string headerStr;
     if (std::getline(iss, headerStr, '|')) {
         int header = std::stoi(headerStr);  // Convert header string to int
+
+        std::cout << "The header of the message is:"  << header << std::endl;
 
         // Determine how to handle based on header
         switch (header) {
@@ -193,18 +136,33 @@ void Socket::receiveMessage() {
 }
 
 void Socket::handleSensorData(std::istringstream& iss) {
-    // Extract sensor data from iss
-    int compass, distanceLeft, distanceRight;
-    if (!(iss >> compass >> distanceLeft >> distanceRight)) {
-        std::cerr << "Error parsing sensor data" << std::endl;
-        return;
+    // Extract raw data from the stream
+    std::string rawData((std::istreambuf_iterator<char>(iss)), std::istreambuf_iterator<char>());
+
+    SensorData sensorData;
+    if (isJson(rawData)) {
+        // Parse the JSON data to create a SensorData object
+        sensorData = parseJsonData(rawData);
+    } else {
+        std::cerr << "Received non-JSON sensor data: " << rawData << std::endl;
+        // Optionally, handle non-JSON data here
     }
 
-    // Process sensor data
-    std::cout << "Received Sensor Data: Compass=" << compass
-              << ", DistanceLeft=" << distanceLeft
-              << ", DistanceRight=" << distanceRight << std::endl;
+    // Process the SensorData object
+    std::cout << "Received Sensor Data: Compass=" << sensorData.Compass
+              << ", DistanceLeft=" << sensorData.DistanceLeft
+              << ", DistanceRear=" << sensorData.DistanceRear
+              << ", DistanceRight=" << sensorData.DistanceRight
+              << ", LightSensor=" << sensorData.LightSensor
+              << ", TotalSpeed=" << sensorData.TotalSpeed << std::endl;
+
+    std::cout << "Lidar Data: ";
+    for (int value : sensorData.LidarData) {
+        std::cout << value << " ";
+    }
+    std::cout << std::endl;
 }
+
 
 void Socket::handleImageData(std::istringstream& iss) {
     // Extract image data from iss (assuming base64 encoded)
@@ -233,7 +191,7 @@ int main() {
     Socket client(serverIp);
 
     while (true) {
-        client.receiveMessage();
+        client.receiveRaspiData();
     }
 
     return 0;
