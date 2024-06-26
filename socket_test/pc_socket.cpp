@@ -169,6 +169,7 @@ int main() {
 
     // Receiving JSON data first
     while (true) {
+        std::cout << "test" << std::endl;
         SensorData sensorData = client.receiveJsonData();
         if (sensorData.Compass == -1) { // Assuming -1 indicates a failed JSON parse or empty data
             std::cout << "Empty sensor data" <<std::endl;
