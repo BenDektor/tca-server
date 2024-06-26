@@ -8,15 +8,14 @@ class Socket {
 public:
     Socket(const std::string& serverIp, int port1, int port2);
     ~Socket();
-    bool connectToServer(int index);
-    bool sendMessage(const char* message, int index);
-    std::string receiveMessage(int index);
-    void closeConnection();
+    bool sendMessage(const std::string& message, int index);
+    bool receiveMessage(std::string& message, int index);
 
 private:
-    int clientSockets[2];
-    struct sockaddr_in serverAddrs[2];
-    std::string serverIp;
+    int clientSocket1;
+    int clientSocket2;
+    struct sockaddr_in serverAddr1;
+    struct sockaddr_in serverAddr2;
 };
 
 
