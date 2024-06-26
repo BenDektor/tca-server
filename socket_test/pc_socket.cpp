@@ -1,15 +1,5 @@
 #include "pc_socket.h"
 
-std::vector<uchar> Socket::base64_decode(const std::string &base64str) {
-    std::string decoded;
-    cv::Mat data = cv::Mat(1, base64str.length(), CV_8UC1, const_cast<char*>(base64str.c_str()));
-    cv::Mat binaryData = cv::imdecode(data, cv::IMREAD_COLOR);
-    if (binaryData.empty()) {
-        std::cerr << "Error decoding base64 data" << std::endl;
-        return std::vector<uchar>();
-    }
-    return std::vector<uchar>(binaryData.data, binaryData.data + binaryData.total());
-}
 
 Socket::Socket(const std::string& ip_address) {
     if (!setupConnection(ip_address)) {
@@ -102,41 +92,52 @@ SensorData Socket::parseJsonData(const std::string& jsonData) {
 }
 
 void Socket::receiveRaspiData() {
-    char buffer[1024];  // Adjust buffer size as needed
-    int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
-    if (bytesRead == -1) {
-        std::cerr << "Error receiving message. Error code " << errno << ": " << strerror(errno) << std::endl;
-        return;
-    }
-    else{
-        std::cout << "received some data: " << bytesRead << std::endl;
-    }
+    char buffer[4096];  // Adjust buffer size as needed
+    std::string messageBuffer;
 
-    // Ensure null-terminated string
-    buffer[bytesRead] = '\0';
+    while (true) {
+        int bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+        if (bytesRead < 0) {
+            std::cerr << "Error receiving message. Error code " << errno << ": " << strerror(errno) << std::endl;
+            return;
+        }
+        else if (bytesRead == 0) {
+            std::cerr << "Connection closed by peer" << std::endl;
+            return;
+        }
 
-    // Parse received message
-    std::istringstream iss(buffer);
-    std::string headerStr;
-    if (std::getline(iss, headerStr, '|')) {
-        int header = std::stoi(headerStr);  // Convert header string to int
+        buffer[bytesRead] = '\0';
+        messageBuffer += std::string(buffer);
 
-        std::cout << "The header of the message is:"  << header << std::endl;
+        size_t pos;
+        while ((pos = messageBuffer.find("END\n")) != std::string::npos) {
+            std::string completeMessage = messageBuffer.substr(0, pos);
+            messageBuffer.erase(0, pos + 4);  // Remove the processed message and the delimiter
 
-        // Determine how to handle based on header
-        switch (header) {
-            case 1:
-                handleSensorData(iss);  // Pass remaining data stream to handleSensorData
-                break;
-            case 2:
-                handleImageData(iss);   // Pass remaining data stream to handleImageData
-                break;
-            default:
-                std::cerr << "Unknown header: " << header << std::endl;
-                break;
+            std::istringstream iss(completeMessage);
+            std::string headerStr;
+            if (std::getline(iss, headerStr, '|')) {
+                int header = std::stoi(headerStr);  // Convert header string to int
+
+                std::cout << "The header of the message is: " << header << std::endl;
+
+                // Determine how to handle based on header
+                switch (header) {
+                    case 1:
+                        handleSensorData(iss);  // Pass remaining data stream to handleSensorData
+                        break;
+                    case 2:
+                        handleImageData(iss);   // Pass remaining data stream to handleImageData
+                        break;
+                    default:
+                        std::cerr << "Unknown header: " << header << std::endl;
+                        break;
+                }
+            }
         }
     }
 }
+
 
 void Socket::handleSensorData(std::istringstream& iss) {
     // Extract raw data from the stream
@@ -167,27 +168,47 @@ void Socket::handleSensorData(std::istringstream& iss) {
 }
 
 
+std::vector<uchar> Socket::base64_decode(const std::string &base64str) {
+    std::vector<uchar> decodedBytes;
+    try {
+        std::string decoded;
+        cv::Mat data = cv::Mat(1, base64str.length(), CV_8UC1, const_cast<char*>(base64str.c_str()));
+        cv::Mat binaryData = cv::imdecode(data, cv::IMREAD_COLOR);
+        if (binaryData.empty()) {
+            std::cerr << "Error decoding base64 data" << std::endl;
+            return std::vector<uchar>();
+        }
+        return std::vector<uchar>(binaryData.data, binaryData.data + binaryData.total());
+    } catch (const std::exception &e) {
+        std::cerr << "Exception during base64 decode: " << e.what() << std::endl;
+    }
+    return decodedBytes;
+}
+
+
 void Socket::handleImageData(std::istringstream& iss) {
-    // Extract image data from iss (assuming base64 encoded)
     std::string base64Image;
     if (!std::getline(iss, base64Image)) {
         std::cerr << "Error parsing image data" << std::endl;
         return;
     }
 
-    // Decode base64 and process image (decode and display or save to file)
     std::vector<uchar> buffer = base64_decode(base64Image);
+    if (buffer.empty()) {
+        std::cerr << "Error decoding base64 image data" << std::endl;
+        return;
+    }
+    
     cv::Mat image = cv::imdecode(buffer, cv::IMREAD_COLOR);
-
     if (image.empty()) {
         std::cerr << "Error decoding image" << std::endl;
         return;
     }
 
-    // Display or save image
     cv::imshow("Received Image", image);
-    cv::waitKey(0);
+    cv::waitKey(1); // Use 1 instead of 0 to avoid blocking
 }
+
 
 int main() {
     std::string serverIp = "172.16.8.137";
