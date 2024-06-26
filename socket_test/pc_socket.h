@@ -1,28 +1,14 @@
-#include <opencv2/opencv.hpp>
 
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <cstring>
-#include <vector>
-#include <fstream>
 
-class Socket{
-    private:
-        int clientSocket;
-        struct sockaddr_in serverAddr;
+class Client {
+public:
+    Client(const char *ip, int port1, int port2);
+    void connectToServer();
 
-    public:
-        Socket(const std::string& ip_address);
-        
-        ~Socket();
+private:
+    const char *ip;
+    int port1, port2;
 
-        bool setupConnection(const std::string& ip_address);
-        bool sendMessage(const char* message);
-        bool receiveMessage(char* buffer, int bufferSize);
-        void closeConnection();
-        bool sendTestMessage();
-        cv::Mat receiveFrame();
+    void connectToPort(int port);
 };
+
