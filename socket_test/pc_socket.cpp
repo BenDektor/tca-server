@@ -1,332 +1,119 @@
-#include "pc_socket.h"
+#include "socket_raspi.h"
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
 
+Socket::Socket(const std::string& serverIp, int port1, int port2) : serverIp(serverIp) {
+    clientSockets[0] = 0;
+    clientSockets[1] = 0;
 
+    memset(&serverAddrs[0], 0, sizeof(serverAddrs[0]));
+    memset(&serverAddrs[1], 0, sizeof(serverAddrs[1]));
 
-Socket::Socket(const std::string& ip_address) {
-    if (!setupConnection(ip_address)) {
-        std::cerr << "Error: Unable to establish connection\n";
-        return;
+    serverAddrs[0].sin_family = AF_INET;
+    serverAddrs[0].sin_port = htons(port1);
+
+    serverAddrs[1].sin_family = AF_INET;
+    serverAddrs[1].sin_port = htons(port2);
+
+    if (inet_pton(AF_INET, serverIp.c_str(), &serverAddrs[0].sin_addr) <= 0) {
+        std::cerr << "Error: Invalid server IP address\n";
     }
 
-    // Receive the test message from the server
-    char testMessage[1024] = {0};
-    if (!receiveMessage(testMessage, sizeof(testMessage))) {
-        std::cerr << "Error: Unable to receive test message\n";
-        return;
+    if (inet_pton(AF_INET, serverIp.c_str(), &serverAddrs[1].sin_addr) <= 0) {
+        std::cerr << "Error: Invalid server IP address\n";
     }
-    std::cout << "Test message from server: " << testMessage << std::endl;
 
-
-    if (!sendTestMessage()) {
-        std::cerr << "Error: Unable to send test message\n";
-        return;
+    // Connect to both ports
+    if (!connectToServer(0) || !connectToServer(1)) {
+        std::cerr << "Error: Unable to connect to server\n";
     }
+
+    // Send test messages
+    if (!sendMessage("Test Message 1", 0) || !sendMessage("Test Message 2", 1)) {
+        std::cerr << "Error: Unable to send test messages\n";
+    }
+
+    std::string message1 = receiveMessage(0);
+    std::string message2 = receiveMessage(1);
+
+    if (message1.empty() || message2.empty()) {
+        std::cerr << "Error: Unable to receive messages\n";
+        closeConnection();
+        throw std::runtime_error("Failed to receive messages");
+    }
+
+    std::cout << "Received message 1: " << message1 << std::endl;
+    std::cout << "Received message 2: " << message2 << std::endl;
 }
-
 
 Socket::~Socket() {
     closeConnection();
 }
 
-
-bool Socket::setupConnection(const std::string& ip_address) {
+bool Socket::connectToServer(int index) {
     // Create socket
-    if ((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    if ((clientSockets[index] = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        std::cerr << "Error: Unable to create socket\n";
         return false;
     }
-
-    // Configure server address
-    memset(&serverAddr, 0, sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr(ip_address.c_str());
-    serverAddr.sin_port = htons(3000); // Use the same port as the Raspberry Pi side
 
     // Connect to server
-    if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
+    if (connect(clientSockets[index], (struct sockaddr *)&serverAddrs[index], sizeof(serverAddrs[index])) < 0) {
+        std::cerr << "Error: Unable to connect to server on port " << ntohs(serverAddrs[index].sin_port) << "\n";
         return false;
     }
 
     return true;
 }
 
-
-bool Socket::sendMessage(const char* message) {
-    // Send response message
-    std::cout << "Socket: sendign this message to raspi: " << message << std::endl;
-
-    if (send(clientSocket, message, strlen(message), 0) < 0) {
+bool Socket::sendMessage(const char* message, int index) {
+    // Send message
+    if (send(clientSockets[index], message, strlen(message), 0) < 0) {
+        std::cerr << "Error: Unable to send message\n";
         return false;
     }
     return true;
 }
 
-bool Socket::receiveMessage(char* buffer, int bufferSize) {
-    int bytesReceived = recv(clientSocket, buffer, bufferSize, 0);
+std::string Socket::receiveMessage(int index) {
+    char buffer[21]; // Buffer to store up to 20 characters + 1 for null terminator
+    memset(buffer, 0, sizeof(buffer)); // Clear the buffer
+    int bytesReceived = recv(clientSockets[index], buffer, sizeof(buffer) - 1, 0); // Leave space for null terminator
+
     if (bytesReceived < 0) {
-        return false;
+        std::cerr << "Error: Unable to receive message, error code " << errno << ": " << strerror(errno) << std::endl;
+        return "";
+    } else if (bytesReceived == 0) {
+        return ""; // If no data is received, return an empty string
     }
-    return true;
-}
 
+    buffer[bytesReceived] = '\0'; // Ensure the string is null-terminated
+    return std::string(buffer);
+}
 
 void Socket::closeConnection() {
-    close(clientSocket);
+    // Close client sockets if valid
+    for (int i = 0; i < 2; i++) {
+        if (clientSockets[i] >= 0) {
+            if (close(clientSockets[i]) < 0) {
+                std::cerr << "Error: Failed to close client socket\n";
+            }
+            clientSockets[i] = -1;  // Set to -1 to indicate the socket is no longer valid
+        }
+    }
 }
 
 
-bool Socket::sendTestMessage() {
-    const char* responseMessage = "Hello from PC!";
-    return sendMessage(responseMessage);
-}
 
-
-cv::Mat Socket::receiveFrame() {
-    // Receive frame size
-    int frameSize = 0;
-    if (recv(clientSocket, &frameSize, sizeof(frameSize), 0) < 0) {
-        std::cerr << "Error: Failed to receive frame size\n";
-        closeConnection();
-        exit(1);
-    }
-    
-    // Allocate buffer for frame data based on received size
-    std::vector<char> framebuffer(frameSize);
-
-    // Receive the actual frame data
-    int framebytesReceived = recv(clientSocket, framebuffer.data(), frameSize, MSG_WAITALL);
-    if (framebytesReceived < 0) {
-        std::cerr << "Error: Unable to receive frame data\n";
-        closeConnection();
-        exit(1);
-    }
-
-    // Decode the frame using OpenCV
-    cv::Mat frame = cv::imdecode(cv::Mat(framebuffer), cv::IMREAD_COLOR);
-
-    // Check if frame decoding was successful
-    if (frame.empty()) {
-        std::cerr << "Error: Failed to decode frame\n";
-        closeConnection();
-        exit(1);
-    }
-
-    return frame;
-}
-
-
-SensorData Socket::receiveJsonData() {
-    char buffer[4096];
-    SensorData sensorData;
-    sensorData.Compass = -1; // Default value to indicate failure
-
-    int bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
-    if (bytesRead <= 0) {
-        std::cerr << "Connection closed by server or error occurred\n";
-        return sensorData;
-    }
-
-    std::string receivedData(buffer, bytesRead);
-    size_t jsonStartIndex = receivedData.find('{');
-    if (jsonStartIndex != std::string::npos) {
-        receivedData = receivedData.substr(jsonStartIndex);
-    }
-
-    if (isJson(receivedData)) {
-        sensorData = parseJsonData(receivedData);
-    } else {
-        std::cout << "Received non-JSON message: " << receivedData << std::endl;
-    }
-
-    return sensorData;
-}
-
-bool Socket::isJson(const std::string& str) {
-    return !str.empty() && (str.front() == '{' || str.front() == '[') && (str.back() == '}' || str.back() == ']');
-}
-
-SensorData Socket::parseJsonData(const std::string& jsonData) {
-    SensorData sensorData;
-    try {
-        auto jsonObject = nlohmann::json::parse(jsonData);
-        sensorData.Compass = jsonObject.value("Compass", 0);
-        sensorData.DistanceLeft = jsonObject.value("Distance Left", 0.0);
-        sensorData.DistanceRear = jsonObject.value("Distance Rear", 0.0);
-        sensorData.DistanceRight = jsonObject.value("Distance Right", 0.0);
-        sensorData.LightSensor = jsonObject.value("Light Sensor", 0);
-        sensorData.TotalSpeed = jsonObject.value("Total Speed", 0.0);
-        sensorData.LidarData = jsonObject.value("Lidar Data", std::vector<int>{});
-    } catch (const nlohmann::json::exception& e) {
-        std::cerr << "Error parsing JSON data: " << e.what() << std::endl;
-    }
-    return sensorData;
-}
-
-
+// Define global constants
+const std::string SERVER_IP = "172.16.8.137"; // Replace with the actual server IP
+const int PORT1 = 3000;
+const int PORT2 = 3001;
 
 int main() {
-    std::string serverIp = "172.16.8.137";
-    Socket client(serverIp);
-
-    // Receiving JSON data first
-    while (true) {
-        std::cout << "test" << std::endl;
-        SensorData sensorData = client.receiveJsonData();
-        if (sensorData.Compass == -1) { // Assuming -1 indicates a failed JSON parse or empty data
-            std::cout << "Empty sensor data" <<std::endl;
-        }
-        else{
-            std::cout << "Compass: " << sensorData.Compass << ", Distance Left: " << sensorData.DistanceLeft
-                    << ", Distance Rear: " << sensorData.DistanceRear << ", Distance Right: " << sensorData.DistanceRight
-                    << ", Light Sensor: " << sensorData.LightSensor << ", Total Speed: " << sensorData.TotalSpeed << "\n";
-            std::cout << "Lidar Values (Size: " << sensorData.LidarData.size() << "): ";
-            for (int value : sensorData.LidarData) {
-                std::cout << value << " ";
-            }
-            std::cout << std::endl;
-        }
-     
-
-        //std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-        // Receiving and displaying a frame using OpenCV
-        /*cv::Mat frame = client.receiveFrame();
-        if (!frame.empty()) {
-            cv::imshow("Received Frame", frame);
-            cv::waitKey(1); // Display the frame
-        }*/
-    }
+    Socket socket(SERVER_IP, PORT1, PORT2); // Initialize socket with server IP and two ports
 
     return 0;
 }
-
-
-
-/*int main() {
-    // Initialize the socket with the server's IP address
-    Socket socket("192.168.193.223");
-
-    // Continuously receive and display frames
-    while (true) {
-        // Receive a frame from the server
-        cv::Mat frame = socket.receiveFrame();
-
-        // Check if frame decoding was successful
-        if (frame.empty()) {
-            std::cerr << "Error: Failed to receive frame\n";
-            break;
-        }
-
-        // Display the frame
-        cv::imshow("Video Stream", frame);
-
-        // Check for exit key press
-        if (cv::waitKey(1) == 'q') {
-            break;
-        }
-    }
-
-    return 0;
-}*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*int main() {
-    int clientSocket;
-    struct sockaddr_in serverAddr;
-
-    // Create socket
-    if ((clientSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        std::cerr << "Error: Unable to create socket\n";
-        return 1;
-    }
-
-    // Configure server address
-    memset(&serverAddr, 0, sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr("192.168.193.223"); // IP of Raspberry Pi
-    serverAddr.sin_port = htons(8080); // Use the same port as the Raspberry Pi side
-
-    // Connect to server
-    if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
-        std::cerr << "Error: Unable to connect to server\n";
-        close(clientSocket);
-        return 1;
-    }
-
-    // Receive message
-    char buffer[1024] = {0};
-    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-    if (bytesReceived < 0) {
-        std::cerr << "Error: Unable to receive message\n";
-        close(clientSocket);
-        return 1;
-    } else {
-        std::cout << "Message from Raspberry Pi: " << buffer << std::endl;
-    }
-
-    // Send response message
-    const char* responseMessage = "Hello from PC!";
-    if (send(clientSocket, responseMessage, strlen(responseMessage), 0) < 0) {
-        std::cerr << "Error: Unable to send message\n";
-        close(clientSocket);
-        return 1;
-    }
-
-    // Create a window to display the video stream
-    cv::namedWindow("Video Stream", cv::WINDOW_NORMAL);
-
-    // Continuously receive and display frames
-    while (true) {
-        // Receive frame size
-        int frameSize = 0;
-        if (recv(clientSocket, &frameSize, sizeof(frameSize), 0) < 0) {
-            std::cerr << "Error: Failed to receive frame size\n";
-            close(clientSocket);
-            return 1;
-        }
-
-        // Allocate buffer for frame data based on received size
-        std::vector<char> framebuffer(frameSize);
-
-        // Receive the actual frame data
-        int framebytesReceived = recv(clientSocket, framebuffer.data(), frameSize, MSG_WAITALL);
-        if (framebytesReceived < 0) {
-            std::cerr << "Error: Unable to receive frame data\n";
-            close(clientSocket);
-            return 1;
-        }
-
-        // Decode the frame using OpenCV
-        cv::Mat frame = cv::imdecode(cv::Mat(framebuffer), cv::IMREAD_COLOR);
-
-        // Check if frame decoding was successful
-        if (frame.empty()) {
-            std::cerr << "Error: Failed to decode frame\n";
-            close(clientSocket);
-            return 1;
-        }
-
-        // Display the frame
-        cv::imshow("Video Stream", frame);
-
-        // Check for exit key press
-        if (cv::waitKey(1) == 'q') {
-            break;
-        }
-    }
-
-    // Close socket
-    close(clientSocket);
-
-    return 0;
-}*/
