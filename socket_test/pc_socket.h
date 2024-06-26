@@ -32,26 +32,19 @@ public:
     Socket(const std::string& ip_address);
     ~Socket();
 
-    bool setupConnection(const std::string& ip_address);
     bool sendMessage(const char* message);
-    bool receiveMessage(char* buffer, int bufferSize);
-    void closeConnection();
-    bool sendTestMessage();
-    cv::Mat receiveFrame();
-
-    SensorData receiveJsonData();
-
-
+    void processIncomingMessages();
+    SensorData receiveJsonData(const std::string& jsonData);
+    cv::Mat receiveFrame(const std::vector<char>& imgData);
 
 private:
+    bool setupConnection(const std::string& ip_address);
+    void closeConnection();
+    bool sendTestMessage();
+    std::vector<std::string> extractMessages(const std::string& data, const std::string& startDelimiter, const std::string& endDelimiter);
+
     int clientSocket;
     struct sockaddr_in serverAddr;
-
-
-    bool isJson(const std::string& str);
-    SensorData parseJsonData(const std::string& jsonData);
-
-    
 };
 
 #endif // PC_SOCKET_H
