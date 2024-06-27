@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <thread>
 
-Socket::Socket(const std::string& serverIp, int port1, int port2) {
+Socket::Socket(const std::string& serverIp, int portSensorDaten, int portFahrzeugbefehle) {
     // Create UDP sockets
     if ((clientSocketSensorData = socket(AF_INET, SOCK_DGRAM, 0)) < 0 || (clientSocketFahrzeugbefehle = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         std::cerr << "Error: Unable to create UDP socket\n";
@@ -15,11 +15,11 @@ Socket::Socket(const std::string& serverIp, int port1, int port2) {
     // Configure server addresses
     memset(&serverAddrSensorData, 0, sizeof(serverAddrSensorData));
     serverAddrSensorData.sin_family = AF_INET;
-    serverAddrSensorData.sin_port = htons(port1);
+    serverAddrSensorData.sin_port = htons(portSensorDaten);
 
     memset(&serverAddrFahrzeugbefehle, 0, sizeof(serverAddrFahrzeugbefehle));
     serverAddrFahrzeugbefehle.sin_family = AF_INET;
-    serverAddrFahrzeugbefehle.sin_port = htons(port2);
+    serverAddrFahrzeugbefehle.sin_port = htons(portFahrzeugbefehle);
 
     if (inet_pton(AF_INET, serverIp.c_str(), &serverAddrSensorData.sin_addr) <= 0 ||
         inet_pton(AF_INET, serverIp.c_str(), &serverAddrFahrzeugbefehle.sin_addr) <= 0) {
