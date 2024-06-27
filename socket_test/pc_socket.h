@@ -6,16 +6,15 @@
 
 class Socket {
 public:
-    Socket(const std::string& serverIp, int port1, int port2);
+    Socket(const std::string& serverIp, int port1, int port2, int port3);
     ~Socket();
     bool sendMessage(const std::string& message, int index);
     bool receiveMessage(std::string& message, int index);
 
 private:
-    int clientSocket1;
-    int clientSocket2;
-    struct sockaddr_in serverAddr1;
-    struct sockaddr_in serverAddr2;
+    bool setupSocket(int port, struct sockaddr_in& serverAddr, int& clientSocket);
+    int clientSockets[3];
+    struct sockaddr_in serverAddrs[3];
 };
 
 
