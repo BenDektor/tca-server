@@ -7,39 +7,39 @@
 
 Socket::Socket(const std::string& serverIp, int port1, int port2) {
     // Create UDP sockets
-    if ((clientSocket1 = socket(AF_INET, SOCK_DGRAM, 0)) < 0 || (clientSocket2 = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    if ((clientSocketSensorData = socket(AF_INET, SOCK_DGRAM, 0)) < 0 || (clientSocketFahrzeugbefehle = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         std::cerr << "Error: Unable to create UDP socket\n";
         return;
     }
 
     // Configure server addresses
-    memset(&serverAddr1, 0, sizeof(serverAddr1));
-    serverAddr1.sin_family = AF_INET;
-    serverAddr1.sin_port = htons(port1);
+    memset(&serverAddrSensorData, 0, sizeof(serverAddrSensorData));
+    serverAddrSensorData.sin_family = AF_INET;
+    serverAddrSensorData.sin_port = htons(port1);
 
-    memset(&serverAddr2, 0, sizeof(serverAddr2));
-    serverAddr2.sin_family = AF_INET;
-    serverAddr2.sin_port = htons(port2);
+    memset(&serverAddrFahrzeugbefehle, 0, sizeof(serverAddrFahrzeugbefehle));
+    serverAddrFahrzeugbefehle.sin_family = AF_INET;
+    serverAddrFahrzeugbefehle.sin_port = htons(port2);
 
-    if (inet_pton(AF_INET, serverIp.c_str(), &serverAddr1.sin_addr) <= 0 ||
-        inet_pton(AF_INET, serverIp.c_str(), &serverAddr2.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, serverIp.c_str(), &serverAddrSensorData.sin_addr) <= 0 ||
+        inet_pton(AF_INET, serverIp.c_str(), &serverAddrFahrzeugbefehle.sin_addr) <= 0) {
         std::cerr << "Error: Invalid server IP address\n";
         return;
     }
 
     // Start threads
-    thread1 = std::thread(&Socket::sendReceivePort1, this);
-    thread2 = std::thread(&Socket::sendPort2, this);
+    sensorDataThread = std::thread(&Socket::SensorDataPort, this);
+    fahrzeugbefehleThread = std::thread(&Socket::FahrzeugbefehlePort, this);
 }
 
 Socket::~Socket() {
-    thread1.join();
-    thread2.join();
-    close(clientSocket1);
-    close(clientSocket2);
+    sensorDataThread.join();
+    fahrzeugbefehleThread.join();
+    close(clientSocketFahrzeugbefehle);
+    close(clientSocketSensorData);
 }
 
-void Socket::sendReceivePort1() {
+void Socket::SensorDataPort() {
     while (true) {
         if (!sendMessage("Test Message 1 Bene", 0)) {
             std::cerr << "Error: Unable to send message on port 1\n";
@@ -56,7 +56,7 @@ void Socket::sendReceivePort1() {
     }
 }
 
-void Socket::sendPort2() {
+void Socket::FahrzeugbefehlePort() {
     while (true) {
         if (!sendMessage("Test Message 2 Bene", 1)) {
             std::cerr << "Error: Unable to send message on port 2\n";
@@ -72,11 +72,11 @@ bool Socket::sendMessage(const std::string& message, int index) {
 
     // Determine which socket to use based on index
     if (index == 0) {
-        serverAddr = serverAddr1;
-        clientSocket = clientSocket1;
+        serverAddr = serverAddrSensorData;
+        clientSocket = clientSocketSensorData;
     } else if (index == 1) {
-        serverAddr = serverAddr2;
-        clientSocket = clientSocket2;
+        serverAddr = serverAddrFahrzeugbefehle;
+        clientSocket = clientSocketFahrzeugbefehle;
     } else {
         std::cerr << "Error: Invalid index for sending message\n";
         return false;
@@ -102,9 +102,9 @@ bool Socket::receiveMessage(std::string& message, int index) {
 
     // Determine which socket to use based on index
     if (index == 0) {
-        clientSocket = clientSocket1;
+        clientSocket = clientSocketSensorData;
     } else if (index == 1) {
-        clientSocket = clientSocket2;
+        clientSocket = clientSocketFahrzeugbefehle;
     } else {
         std::cerr << "Error: Invalid index for receiving message\n";
         return false;

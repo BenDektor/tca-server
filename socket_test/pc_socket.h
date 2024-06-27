@@ -12,18 +12,18 @@ public:
     bool sendMessage(const std::string& message, int index);
     bool receiveMessage(std::string& message, int index);
 
-    std::thread thread1, thread2;
+    std::thread sensorDataThread, fahrzeugbefehleThread;
 
 
 private:
-    int clientSocket1;
-    int clientSocket2;
-    struct sockaddr_in serverAddr1;
-    struct sockaddr_in serverAddr2;
+    int clientSocketSensorData;
+    int clientSocketFahrzeugbefehle;
+    struct sockaddr_in serverAddrSensorData;
+    struct sockaddr_in serverAddrFahrzeugbefehle;
 
 
-    void sendReceivePort1();
-    void sendPort2();
+    void SensorDataPort();
+    void FahrzeugbefehlePort();
 };
 
 
