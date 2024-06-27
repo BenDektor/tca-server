@@ -3,6 +3,7 @@
 
 #include <string>
 #include <netinet/in.h>
+#include <thread>
 
 class Socket {
 public:
@@ -11,11 +12,18 @@ public:
     bool sendMessage(const std::string& message, int index);
     bool receiveMessage(std::string& message, int index);
 
+    std::thread thread1, thread2;
+
+
 private:
     int clientSocket1;
     int clientSocket2;
     struct sockaddr_in serverAddr1;
     struct sockaddr_in serverAddr2;
+
+
+    void sendReceivePort1();
+    void sendPort2();
 };
 
 

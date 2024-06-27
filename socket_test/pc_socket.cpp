@@ -26,11 +26,44 @@ Socket::Socket(const std::string& serverIp, int port1, int port2) {
         std::cerr << "Error: Invalid server IP address\n";
         return;
     }
+
+    // Start threads
+    thread1 = std::thread(&Socket::sendReceivePort1, this);
+    thread2 = std::thread(&Socket::sendPort2, this);
 }
 
 Socket::~Socket() {
+    thread1.join();
+    thread2.join();
     close(clientSocket1);
     close(clientSocket2);
+}
+
+void Socket::sendReceivePort1() {
+    while (true) {
+        if (!sendMessage("Test Message 1 Bene", 0)) {
+            std::cerr << "Error: Unable to send message on port 1\n";
+        }
+
+        std::string message;
+        if (!receiveMessage(message, 0)) {
+            std::cerr << "Error: Unable to receive message on port 1\n";
+        } else {
+            std::cout << "Received message 1: " << message << std::endl;
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
+    }
+}
+
+void Socket::sendPort2() {
+    while (true) {
+        if (!sendMessage("Test Message 2 Bene", 1)) {
+            std::cerr << "Error: Unable to send message on port 2\n";
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
+    }
 }
 
 bool Socket::sendMessage(const std::string& message, int index) {
@@ -99,41 +132,10 @@ const std::string SERVER_IP = "172.16.8.137"; // Replace with the actual server 
 const int PORT1 = 3000;
 const int PORT2 = 3001;
 
-void sendReceivePort1(Socket &socket) {
-    while (true) {
-        if (!socket.sendMessage("Test Message 1 Bene", 0)) {
-            std::cerr << "Error: Unable to send message on port 1\n";
-        }
-
-        std::string message;
-        if (!socket.receiveMessage(message, 0)) {
-            std::cerr << "Error: Unable to receive message on port 1\n";
-        } else {
-            std::cout << "Received message 1: " << message << std::endl;
-        }
-
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
-    }
-}
-
-void sendPort2(Socket &socket) {
-    while (true) {
-        if (!socket.sendMessage("Test Message 2 Bene", 1)) {
-            std::cerr << "Error: Unable to send message on port 2\n";
-        }
-
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
-    }
-}
 
 int main() {
     Socket socket(SERVER_IP, PORT1, PORT2); // Initialize socket with server IP and two ports
 
-    std::thread thread1(sendReceivePort1, std::ref(socket));
-    std::thread thread2(sendPort2, std::ref(socket));
-
-    thread1.join();
-    thread2.join();
 
     return 0;
 }
