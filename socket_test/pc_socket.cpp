@@ -3,6 +3,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <thread>
 
 Socket::Socket(const std::string& serverIp, int port1, int port2) {
     // Create UDP sockets
@@ -98,23 +99,41 @@ const std::string SERVER_IP = "172.16.8.137"; // Replace with the actual server 
 const int PORT1 = 3000;
 const int PORT2 = 3001;
 
+void sendReceivePort1(Socket &socket) {
+    while (true) {
+        if (!socket.sendMessage("Test Message 1 Bene", 0)) {
+            std::cerr << "Error: Unable to send message on port 1\n";
+        }
+
+        std::string message;
+        if (!socket.receiveMessage(message, 0)) {
+            std::cerr << "Error: Unable to receive message on port 1\n";
+        } else {
+            std::cout << "Received message 1: " << message << std::endl;
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
+    }
+}
+
+void sendPort2(Socket &socket) {
+    while (true) {
+        if (!socket.sendMessage("Test Message 2 Bene", 1)) {
+            std::cerr << "Error: Unable to send message on port 2\n";
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
+    }
+}
+
 int main() {
     Socket socket(SERVER_IP, PORT1, PORT2); // Initialize socket with server IP and two ports
 
-    // Example sending and receiving messages
-    if (!socket.sendMessage("Test Message 1", 0) || !socket.sendMessage("Test Message 2", 1)) {
-        std::cerr << "Error: Unable to send messages\n";
-        return 1;
-    }
+    std::thread thread1(sendReceivePort1, std::ref(socket));
+    std::thread thread2(sendPort2, std::ref(socket));
 
-    std::string message1, message2;
-    if (!socket.receiveMessage(message1, 0)) {
-        std::cerr << "Error: Unable to receive messages\n";
-        return 1;
-    }
-
-    std::cout << "Received message 1: " << message1 << std::endl;
-    //std::cout << "Received message 2: " << message2 << std::endl;
+    thread1.join();
+    thread2.join();
 
     return 0;
 }
