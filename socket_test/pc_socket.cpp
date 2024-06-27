@@ -108,13 +108,13 @@ int main() {
     }
 
     std::string message1, message2;
-    if (!socket.receiveMessage(message1, 0) || !socket.receiveMessage(message2, 1)) {
+    if (!socket.receiveMessage(message1, 0)) {
         std::cerr << "Error: Unable to receive messages\n";
         return 1;
     }
 
     std::cout << "Received message 1: " << message1 << std::endl;
-    std::cout << "Received message 2: " << message2 << std::endl;
+    //std::cout << "Received message 2: " << message2 << std::endl;
 
     return 0;
 }
