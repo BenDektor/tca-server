@@ -428,8 +428,15 @@ CarPosition LaneHandler::getCarPosition(cv::Mat image) {
     // Optionally, you can retrieve and display processed images if needed
     // cv::Mat blurredImage = strassenFinder.blurredImage;
     cv::Mat houghImage = strassenFinder.houghLinesImage;
+    cv::Mat blurredImage = strassenFinder.blurredImage;
+    cv::Mat edgesImage = strassenFinder.edgesImage;
+
+    
     // cv::Mat edgesImage = strassenFinder.edgesImage;
     cv::imshow("hough", houghImage);
+    cv::imshow("blurredImage", blurredImage);
+    cv::imshow("edgesImage", edgesImage);
+
 
     drawCarPositionText(carPosition);
     cv::imshow("Average Lines", drawing_image);
@@ -445,7 +452,7 @@ int main () {
     LaneHandler laneHandler;
 
 
-    cv::Mat image = cv::imread("../images/finder_image7.jpeg");
+    cv::Mat image = cv::imread("../images/size15.jpg");
     CarPosition pos = laneHandler.getCarPosition(image);
 
     if(pos == CarPosition::ON_STREET){
