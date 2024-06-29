@@ -87,6 +87,7 @@ void Socket::KameraBilderPort() {
         else{
             std::cout << "Succesffullly received image data" << std::endl;
         }
+        imageData = frame;
     }
 }
 
@@ -219,6 +220,15 @@ const int PORT3 = 3002;
 
 int main() {
     Socket socket(SERVER_IP, PORT1, PORT2, PORT3); // Initialize socket with server IP and two ports
+
+    while(true){
+        cv::Mat frame = socket.imageData.clone();
+        if(!frame.empty()){
+            cv::imshow("f", frame);
+
+        }
+        cv::waitKey(1);
+    }
 
 
     return 0;

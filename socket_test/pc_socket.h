@@ -15,7 +15,7 @@ public:
 
     std::thread sensorDataThread, fahrzeugbefehleThread, kameraBilderThread;
 
-
+    cv::Mat imageData;
 private:
     int clientSocketSensorData;
     int clientSocketFahrzeugbefehle;
