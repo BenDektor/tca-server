@@ -4,6 +4,7 @@
 #include <string>
 #include <netinet/in.h>
 #include <thread>
+#include <opencv2/opencv.hpp>
 
 class Socket {
 public:
@@ -27,6 +28,8 @@ private:
     void SensorDataPort();
     void FahrzeugbefehlePort();
     void KameraBilderPort();
+
+    cv::Mat receiveFrame();
 };
 
 

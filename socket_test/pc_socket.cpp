@@ -71,14 +71,23 @@ void Socket::KameraBilderPort() {
             std::cerr << "Error: Unable to send message on port 1\n";
         }
 
-        std::string message;
+        /*std::string message;
         if (!receiveMessage(message, 2)) {
             std::cerr << "Error: Unable to receive message on port 1\n";
         } else {
             std::cout << "Received image data 1: " << message << std::endl;
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed*/
+        cv::Mat frame = receiveFrame(); // Receive a frame
+        if (frame.empty()) {
+            std::cerr << "Error: Failed to receive frame on port 2\n";
+            continue; // Skip further processing if frame reception failed
+        }
+
+        // Process the received frame (e.g., display, save, etc.)
+        cv::imshow("Received Frame", frame);
+        cv::waitKey(1); // Adjust delay as necessary
     }
 }
 
@@ -157,6 +166,48 @@ bool Socket::receiveMessage(std::string& message, int index) {
     message = std::string(buffer);
     return true;
 }
+
+cv::Mat Socket::receiveFrame() {
+    // Receive frame size
+    int frameSize = 0;
+    struct sockaddr_in serverAddr;
+    socklen_t serverAddrLen = sizeof(serverAddr);
+    int clientSocket;
+
+    // Use the appropriate socket for receiving frames (clientSocketKameraBilder)
+    clientSocket = clientSocketKameraBilder;
+
+    if (recvfrom(clientSocket, &frameSize, sizeof(frameSize), 0,
+                 (struct sockaddr *)&serverAddr, &serverAddrLen) < 0) {
+        std::cerr << "Error: Failed to receive frame size\n";
+        return cv::Mat(); // Return empty matrix on failure
+    }
+
+    // Allocate buffer for frame data based on received size
+    std::vector<uchar> framebuffer(frameSize);
+
+    // Receive the actual frame data
+    int framebytesReceived = recvfrom(clientSocket, framebuffer.data(), framebuffer.size(), 0,
+                                      (struct sockaddr *)&serverAddr, &serverAddrLen);
+
+    if (framebytesReceived < 0) {
+        std::cerr << "Error: Unable to receive frame data\n";
+        return cv::Mat(); // Return empty matrix on failure
+    }
+
+    // Decode the frame using OpenCV
+    cv::Mat frame = cv::imdecode(cv::Mat(framebuffer), cv::IMREAD_COLOR);
+
+    // Check if frame decoding was successful
+    if (frame.empty()) {
+        std::cerr << "Error: Failed to decode frame\n";
+        return cv::Mat(); // Return empty matrix on failure
+    }
+
+    return frame;
+}
+
+
 
 
 
