@@ -84,10 +84,9 @@ void Socket::KameraBilderPort() {
             std::cerr << "Error: Failed to receive frame on port 2\n";
             continue; // Skip further processing if frame reception failed
         }
-
-        // Process the received frame (e.g., display, save, etc.)
-        cv::imshow("Received Frame", frame);
-        cv::waitKey(1); // Adjust delay as necessary
+        else{
+            std::cout << "Succesffullly received image data" << std::endl;
+        }
     }
 }
 
@@ -203,6 +202,7 @@ cv::Mat Socket::receiveFrame() {
         std::cerr << "Error: Failed to decode frame\n";
         return cv::Mat(); // Return empty matrix on failure
     }
+    std::cout << "returning frame" <<std::endl;
 
     return frame;
 }
@@ -211,7 +211,7 @@ cv::Mat Socket::receiveFrame() {
 
 
 
-const std::string SERVER_IP = "172.16.8.137"; // Replace with the actual server IP
+const std::string SERVER_IP = "172.16.17.67"; // Replace with the actual server IP
 const int PORT1 = 3000;
 const int PORT2 = 3001;
 const int PORT3 = 3002;
