@@ -54,11 +54,26 @@ void Socket::SensorDataPort() {
             std::cerr << "Error: Unable to send message on port 1\n";
         }
 
-        std::string message;
+        /*std::string message;
         if (!receiveMessage(message, 0)) {
             std::cerr << "Error: Unable to receive message on port 1\n";
         } else {
             std::cout << "Received sensordata 1: " << message << std::endl;
+        }*/
+
+        SensorData sensorData_raw = receiveJsonData();
+        if (sensorData_raw.Compass == -1) { // Assuming -1 indicates a failed JSON parse or empty data
+            std::cout << "Empty sensor data" << std::endl;
+        } else {
+            sensorData = sensorData_raw;
+             std::cout << "Compass: " << sensorData.Compass << ", Distance Left: " << sensorData.DistanceLeft
+                      << ", Distance Rear: " << sensorData.DistanceRear << ", Distance Right: " << sensorData.DistanceRight
+                      << ", Light Sensor: " << sensorData.LightSensor << ", Total Speed: " << sensorData.TotalSpeed << "\n";
+            std::cout << "Lidar Values (Size: " << sensorData.LidarData.size() << "): ";
+            for (int value : sensorData.LidarData) {
+                std::cout << value << " ";
+            }
+            std::cout << std::endl;
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1)); // Adjust the delay as needed
@@ -208,6 +223,56 @@ cv::Mat Socket::receiveFrame() {
     return frame;
 }
 
+
+SensorData Socket::receiveJsonData() {
+    char buffer[4096];
+    SensorData data;
+    data.Compass = -1; // Default value to indicate failure
+
+    int bytesRead = recv(clientSocketSensorData, buffer, sizeof(buffer), 0);
+    if (bytesRead <= 0) {
+        std::cerr << "Connection closed by server or error occurred\n";
+        return data;
+    }
+
+    std::string receivedData(buffer, bytesRead);
+    size_t jsonStartIndex = receivedData.find('{');
+    if (jsonStartIndex != std::string::npos) {
+        receivedData = receivedData.substr(jsonStartIndex);
+    }
+
+    if (isJson(receivedData)) {
+        data = parseJsonData(receivedData);
+    } else {
+        std::cout << "Received non-JSON message: " << receivedData << std::endl;
+    }
+
+    return data;
+}
+
+
+
+
+bool Socket::isJson(const std::string& str) {
+    return !str.empty() && (str.front() == '{' || str.front() == '[') && (str.back() == '}' || str.back() == ']');
+}
+
+SensorData Socket::parseJsonData(const std::string& jsonData) {
+    SensorData data;
+    try {
+        auto jsonObject = nlohmann::json::parse(jsonData);
+        data.Compass = jsonObject.value("Compass", 0);
+        data.DistanceLeft = jsonObject.value("Distance Left", 0.0);
+        data.DistanceRear = jsonObject.value("Distance Rear", 0.0);
+        data.DistanceRight = jsonObject.value("Distance Right", 0.0);
+        data.LightSensor = jsonObject.value("Light Sensor", 0);
+        data.TotalSpeed = jsonObject.value("Total Speed", 0.0);
+        data.LidarData = jsonObject.value("Lidar Data", std::vector<int>{});
+    } catch (const nlohmann::json::exception& e) {
+        std::cerr << "Error parsing JSON data: " << e.what() << std::endl;
+    }
+    return data;
+}
 
 
 

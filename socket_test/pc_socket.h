@@ -5,6 +5,18 @@
 #include <netinet/in.h>
 #include <thread>
 #include <opencv2/opencv.hpp>
+#include "json_lib/json.hpp"
+
+struct SensorData {
+    int Compass;
+    double DistanceLeft;
+    double DistanceRear;
+    double DistanceRight;
+    std::vector<int> LidarData;
+    int LightSensor;
+    double TotalSpeed;
+};
+
 
 class Socket {
 public:
@@ -16,6 +28,8 @@ public:
     std::thread sensorDataThread, fahrzeugbefehleThread, kameraBilderThread;
 
     cv::Mat imageData;
+    SensorData sensorData;
+
 private:
     int clientSocketSensorData;
     int clientSocketFahrzeugbefehle;
@@ -24,12 +38,15 @@ private:
     struct sockaddr_in serverAddrFahrzeugbefehle;
     struct sockaddr_in serverAddrKameraBilder;
 
+    bool isJson(const std::string& str);
+    SensorData parseJsonData(const std::string& jsonData);
 
     void SensorDataPort();
     void FahrzeugbefehlePort();
     void KameraBilderPort();
 
     cv::Mat receiveFrame();
+    SensorData receiveJsonData();
 };
 
 
