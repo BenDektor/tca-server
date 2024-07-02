@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <thread>
+#include <sys/time.h>
 
 Socket::Socket(const std::string& serverIp, int portSensorDaten, int portFahrzeugbefehle, int portKameraBilder) {
     // Create UDP sockets
@@ -108,6 +109,7 @@ void Socket::KameraBilderPort() {
 
 void Socket::FahrzeugbefehlePort() {
     while (true) {
+        // sendMessage("0/1,-6-6", 1);
         if (!sendMessage("Sending Fahrzeugbefehle ...", 1)) {
             std::cerr << "Error: Unable to send message on port 2\n";
         }
@@ -183,18 +185,28 @@ bool Socket::receiveMessage(std::string& message, int index) {
 }
 
 cv::Mat Socket::receiveFrame() {
+    // Set timeout for the socket
+    struct timeval timeout;
+    timeout.tv_sec = 2;  // Timeout of 5 seconds
+    timeout.tv_usec = 0; // 0 microseconds
+
+    // Use the appropriate socket for receiving frames (clientSocketKameraBilder)
+    int clientSocket = clientSocketKameraBilder;
+
+    // Set the receive timeout option on the socket
+    if (setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+        std::cerr << "Error: Failed to set socket timeout\n";
+        return cv::Mat(); // Return empty matrix on failure
+    }
+
     // Receive frame size
     int frameSize = 0;
     struct sockaddr_in serverAddr;
     socklen_t serverAddrLen = sizeof(serverAddr);
-    int clientSocket;
-
-    // Use the appropriate socket for receiving frames (clientSocketKameraBilder)
-    clientSocket = clientSocketKameraBilder;
 
     if (recvfrom(clientSocket, &frameSize, sizeof(frameSize), 0,
                  (struct sockaddr *)&serverAddr, &serverAddrLen) < 0) {
-        std::cerr << "Error: Failed to receive frame size\n";
+        std::cerr << "Error: Failed to receive frame size or timeout occurred\n";
         return cv::Mat(); // Return empty matrix on failure
     }
 
@@ -206,7 +218,7 @@ cv::Mat Socket::receiveFrame() {
                                       (struct sockaddr *)&serverAddr, &serverAddrLen);
 
     if (framebytesReceived < 0) {
-        std::cerr << "Error: Unable to receive frame data\n";
+        std::cerr << "Error: Unable to receive frame data or timeout occurred\n";
         return cv::Mat(); // Return empty matrix on failure
     }
 
@@ -218,7 +230,7 @@ cv::Mat Socket::receiveFrame() {
         std::cerr << "Error: Failed to decode frame\n";
         return cv::Mat(); // Return empty matrix on failure
     }
-    std::cout << "returning frame" <<std::endl;
+    std::cout << "returning frame" << std::endl;
 
     return frame;
 }
@@ -228,10 +240,26 @@ SensorData Socket::receiveJsonData() {
     char buffer[4096];
     SensorData data;
     data.Compass = -1; // Default value to indicate failure
+    struct sockaddr_in senderAddr;
+    socklen_t senderAddrLen = sizeof(senderAddr);
 
-    int bytesRead = recv(clientSocketSensorData, buffer, sizeof(buffer), 0);
+    // Set timeout for the socket
+    struct timeval timeout;
+    timeout.tv_sec = 5;  // Timeout of 5 seconds
+    timeout.tv_usec = 0; // 0 microseconds
+
+    // Use the appropriate socket (clientSocketSensorData)
+    int clientSocket = clientSocketSensorData;
+
+    // Set the receive timeout option on the socket
+    if (setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
+        std::cerr << "Error: Failed to set socket timeout\n";
+        return data; // Return default data on failure
+    }
+
+    int bytesRead = recvfrom(clientSocket, buffer, sizeof(buffer), 0, (struct sockaddr*)&senderAddr, &senderAddrLen);
     if (bytesRead <= 0) {
-        std::cerr << "Connection closed by server or error occurred\n";
+        std::cerr << "Connection closed by server, error occurred, or timeout occurred\n";
         return data;
     }
 
